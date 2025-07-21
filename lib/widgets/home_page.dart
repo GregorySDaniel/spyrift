@@ -1,0 +1,126 @@
+import 'package:desktop/model/customer_model.dart';
+import 'package:desktop/repository/base_repository.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  late BaseRepository repo;
+  late Future<List<CustomerModel>> future;
+
+  @override
+  void initState() {
+    super.initState();
+
+    repo = context.read<BaseRepository>();
+    future = repo.fetchCustomers();
+  }
+
+  void refresh() {
+    setState(() {
+      future = repo.fetchCustomers();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      floatingActionButton: IconButton.filled(
+        onPressed: () => context.push('/new'),
+        icon: Icon(Icons.add),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: SingleChildScrollView(
+          child: Column(
+            spacing: 16,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text('Customers'),
+              FutureBuilder<List<CustomerModel>>(
+                future: future,
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+
+                  if (snapshot.data == null) {
+                    return Center(
+                      child: Column(
+                        children: [
+                          Text('Ocorreu um erro'),
+                          ElevatedButton(
+                            onPressed: refresh,
+                            child: Text('Tentar novamente'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  final List<CustomerModel> customers = snapshot.data!;
+
+                  return Wrap(
+                    spacing: 16,
+                    runSpacing: 16,
+                    children: customers
+                        .map(
+                          (CustomerModel customer) =>
+                              _CustomerContainer(customer),
+                        )
+                        .toList(),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CustomerContainer extends StatelessWidget {
+  const _CustomerContainer(this.customer);
+
+  final CustomerModel customer;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+
+    return Stack(
+      children: [
+        MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: GestureDetector(
+            onTap: () => context.push('/customer/${customer.id}'),
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: theme.colorScheme.primary),
+              ),
+              padding: EdgeInsets.all(16),
+              width: 200,
+              height: 200,
+              child: Center(child: Text(customer.name)),
+            ),
+          ),
+        ),
+        Positioned(
+          child: IconButton(onPressed: () {}, icon: Icon(Icons.edit)),
+        ),
+        Positioned(
+          right: 0,
+          child: IconButton(onPressed: () {}, icon: Icon(Icons.delete)),
+        ),
+      ],
+    );
+  }
+}
