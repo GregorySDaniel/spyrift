@@ -29,11 +29,19 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  Future<void> onPressed() async {
+    final bool? res = await context.push<bool>('/new');
+
+    if (res ?? false) {
+      refresh();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: IconButton.filled(
-        onPressed: () => context.push('/new'),
+        onPressed: onPressed,
         icon: Icon(Icons.add),
       ),
       body: Padding(
@@ -43,7 +51,7 @@ class _HomePageState extends State<HomePage> {
             spacing: 16,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text('Customers'),
+              Text('Dashboard', style: TextStyle(fontSize: 48)),
               FutureBuilder<List<CustomerModel>>(
                 future: future,
                 builder: (BuildContext context, AsyncSnapshot snapshot) {

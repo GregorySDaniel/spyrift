@@ -1,6 +1,8 @@
 import 'package:desktop/model/account_model.dart';
+import 'package:desktop/services/sqflite.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 
 class NewCustomerPage extends StatefulWidget {
   const NewCustomerPage({super.key});
@@ -11,6 +13,7 @@ class NewCustomerPage extends StatefulWidget {
 
 class _NewCustomerPageState extends State<NewCustomerPage> {
   List<AccountModel> accounts = <AccountModel>[];
+  final TextEditingController nameTec = TextEditingController();
 
   void addAccount() {
     setState(() {
@@ -28,6 +31,12 @@ class _NewCustomerPageState extends State<NewCustomerPage> {
     });
   }
 
+  Future<void> onSubmit() async {
+    await Sqflite().addCustomer(nameTec.text);
+
+    if (mounted) context.pop(true);
+  }
+
   void removeAccount() {
     setState(() {
       accounts.removeAt(0);
@@ -39,7 +48,7 @@ class _NewCustomerPageState extends State<NewCustomerPage> {
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FilledButton(
-        onPressed: () {},
+        onPressed: onSubmit,
         child: Text('Confirm'),
       ),
       appBar: AppBar(),
@@ -50,7 +59,7 @@ class _NewCustomerPageState extends State<NewCustomerPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             spacing: 16,
             children: <Widget>[
-              _LabelInput(label: 'Name'),
+              _LabelInput(label: 'Name', tec: nameTec),
               _AccountLinks(
                 accounts: accounts,
                 addFunction: addAccount,
@@ -155,8 +164,9 @@ class _AccountLinks extends StatelessWidget {
 }
 
 class _LabelInput extends StatelessWidget {
-  const _LabelInput({required this.label});
+  const _LabelInput({required this.label, required this.tec});
 
+  final TextEditingController tec;
   final String label;
 
   @override
@@ -167,6 +177,7 @@ class _LabelInput extends StatelessWidget {
       children: <Widget>[
         Text(label),
         TextField(
+          controller: tec,
           decoration: InputDecoration(
             border: OutlineInputBorder(
               borderSide: BorderSide(color: Colors.red),
