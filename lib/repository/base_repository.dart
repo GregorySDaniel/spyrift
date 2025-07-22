@@ -5,4 +5,5 @@ abstract class BaseRepository {
   Future<List<AccountModel>> fetchAccounts();
   Future<List<CustomerModel>> fetchCustomers();
   Future<CustomerModel> fetchCustomerById(int id);
+  Future<void> deleteCustomer(int id);
 }

@@ -1,3 +1,4 @@
+import 'package:desktop/model/account_model.dart';
 import 'package:desktop/model/customer_model.dart';
 import 'package:desktop/services/database_interface.dart';
 import 'package:path/path.dart';
@@ -21,21 +22,25 @@ class Sqflite implements DatabaseInterface {
 
     if (_db != null) {
       await _db!.execute(
-        '''CREATE TABLE IF NOT EXISTS customers(id INTEGER PRIMARY KEY, name TEXT)''',
+        '''CREATE TABLE IF NOT EXISTS customers(id INTEGER PRIMARY KEY, name TEXT);''',
       );
+      await _db!.execute('''CREATE TABLE IF NOT EXISTS 
+        accounts(id INTEGER PRIMARY KEY, decay_games INTEGER, link TEXT, 
+        nick TEXT, TAG text, ranking TEXT, customer_id INTEGER, 
+        FOREIGN KEY(customer_id) REFERENCES customers(id));''');
     }
   }
 
   @override
-  Future<int> addCustomer(String name) async {
+  Future<void> addCustomer(String name) async {
     final database = await db;
-    return database.insert('customers', <String, Object?>{'name': name});
+    await database.insert('customers', <String, Object?>{'name': name});
   }
 
   @override
-  Future<Database> deleteCustomer() {
-    // TODO: implement deleteCustomer
-    throw UnimplementedError();
+  Future<void> deleteCustomer(int id) async {
+    final database = await db;
+    await database.delete('customers', where: 'id = ?', whereArgs: [id]);
   }
 
   @override
@@ -64,7 +69,7 @@ class Sqflite implements DatabaseInterface {
   }
 
   @override
-  Future<int> addAccount() {
+  Future<int> addAccounts(List<AccountModel> accs) {
     // TODO: implement addAccount
     throw UnimplementedError();
   }

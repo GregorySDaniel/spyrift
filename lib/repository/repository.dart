@@ -33,4 +33,13 @@ class Repository implements BaseRepository {
       throw 'Error: $e';
     }
   }
+
+  @override
+  Future<void> deleteCustomer(int id) async {
+    try {
+      await db.deleteCustomer(id);
+    } catch (e) {
+      throw 'Error: $e';
+    }
+  }
 }

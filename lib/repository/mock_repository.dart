@@ -30,6 +30,12 @@ class MockRepository implements BaseRepository {
 
     return CustomerModel(name: 'Customer', id: id, accounts: mockAccountsList);
   }
+
+  @override
+  Future<void> deleteCustomer(int id) {
+    // TODO: implement deleteCustomer
+    throw UnimplementedError();
+  }
 }
 
 List<AccountModel> mockAccountsList = List<AccountModel>.generate(

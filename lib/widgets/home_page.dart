@@ -29,6 +29,12 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  Future<void> onDelete(int id) async {
+    repo.deleteCustomer(id);
+
+    refresh();
+  }
+
   Future<void> onPressed() async {
     final bool? res = await context.push<bool>('/new');
 
@@ -80,8 +86,10 @@ class _HomePageState extends State<HomePage> {
                     runSpacing: 16,
                     children: customers
                         .map(
-                          (CustomerModel customer) =>
-                              _CustomerContainer(customer),
+                          (CustomerModel customer) => _CustomerContainer(
+                            customer: customer,
+                            onDelete: onDelete,
+                          ),
                         )
                         .toList(),
                   );
@@ -96,9 +104,10 @@ class _HomePageState extends State<HomePage> {
 }
 
 class _CustomerContainer extends StatelessWidget {
-  const _CustomerContainer(this.customer);
+  const _CustomerContainer({required this.customer, required this.onDelete});
 
   final CustomerModel customer;
+  final void Function(int id) onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -126,7 +135,10 @@ class _CustomerContainer extends StatelessWidget {
         ),
         Positioned(
           right: 0,
-          child: IconButton(onPressed: () {}, icon: Icon(Icons.delete)),
+          child: IconButton(
+            onPressed: () => onDelete(customer.id),
+            icon: Icon(Icons.delete),
+          ),
         ),
       ],
     );

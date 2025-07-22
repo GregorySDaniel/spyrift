@@ -1,3 +1,4 @@
+import 'package:desktop/model/account_model.dart';
 import 'package:desktop/model/customer_model.dart';
 
 abstract class DatabaseInterface {
@@ -5,9 +6,9 @@ abstract class DatabaseInterface {
 
   Future<CustomerModel> fetchCustomerById(int id);
 
-  Future<void> deleteCustomer();
+  Future<void> deleteCustomer(int id);
 
-  Future<int> addCustomer(String name);
+  Future<void> addCustomer(String name);
 
-  Future<int> addAccount();
+  Future<void> addAccounts(List<AccountModel> accounts);
 }
