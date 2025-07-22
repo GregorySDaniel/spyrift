@@ -11,12 +11,12 @@ class AccountModel {
 
   AccountModel.fromJson(Map<String, dynamic> json)
     : id = json['id'] as int?,
-      link = json['link'] as String,
+      link = json['link'] as String?,
       decayGames = json['decay_games'] as int?,
       customerId = json['customer_id'] as int?,
-      ranking = json['ranking'] as String,
-      nick = json['nick'] as String,
-      tag = json['tag'] as String;
+      ranking = json['ranking'] as String?,
+      nick = json['nick'] as String?,
+      tag = json['tag'] as String?;
 
   final int? id;
   final int? customerId;
