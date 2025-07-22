@@ -48,9 +48,21 @@ class Repository implements BaseRepository {
   }
 
   @override
-  Future<void> addCustomer(CustomerModel customer) async {
+  Future<int> addCustomer(CustomerModel customer) async {
     try {
-      await db.addCustomer(customer);
+      return await db.addCustomer(customer);
+    } catch (e) {
+      throw 'Error: $e';
+    }
+  }
+
+  @override
+  Future<void> addAccounnts({
+    required List<AccountModel> accounts,
+    required int customerId,
+  }) async {
+    try {
+      await db.addAccounts(accounts: accounts, customerId: customerId);
     } catch (e) {
       throw 'Error: $e';
     }

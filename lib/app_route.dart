@@ -13,7 +13,7 @@ List<RouteBase> routes() {
     GoRoute(path: '/new', builder: (_, __) => NewCustomerPage()),
     GoRoute(
       path: '/customer/:id',
-      builder: (_, state) =>
+      builder: (_, GoRouterState state) =>
           CustomerDetailsPage(customerId: state.pathParameters['id']!),
     ),
   ];

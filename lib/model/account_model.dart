@@ -1,12 +1,4 @@
 class AccountModel {
-  final int? id;
-  final int? customerId;
-  final int? decayGames;
-  final String? link;
-  final String? nick;
-  final String? tag;
-  final String? ranking;
-
   AccountModel({
     this.id,
     this.customerId,
@@ -18,11 +10,19 @@ class AccountModel {
   });
 
   AccountModel.fromJson(Map<String, dynamic> json)
-    : id = json['id'],
-      link = json['link'],
-      decayGames = json['decay_games'],
-      customerId = json['customer_id'],
-      ranking = json['ranking'],
-      nick = json['nick'],
-      tag = json['tag'];
+    : id = json['id'] as int?,
+      link = json['link'] as String,
+      decayGames = json['decay_games'] as int?,
+      customerId = json['customer_id'] as int?,
+      ranking = json['ranking'] as String,
+      nick = json['nick'] as String,
+      tag = json['tag'] as String;
+
+  final int? id;
+  final int? customerId;
+  final int? decayGames;
+  final String? link;
+  final String? nick;
+  final String? tag;
+  final String? ranking;
 }

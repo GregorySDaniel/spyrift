@@ -36,7 +36,7 @@ class _HomePageState extends State<HomePage> {
       builder: (BuildContext context) => KeyboardListener(
         focusNode: FocusNode(),
         autofocus: true,
-        onKeyEvent: (event) {
+        onKeyEvent: (KeyEvent event) {
           if (event is KeyDownEvent &&
               event.logicalKey == LogicalKeyboardKey.enter) {
             context.pop(true);
@@ -65,7 +65,7 @@ class _HomePageState extends State<HomePage> {
     );
 
     if (confirmation ?? false) {
-      repo.deleteCustomer(id);
+      await repo.deleteCustomer(id);
       refresh();
     }
   }
@@ -95,40 +95,44 @@ class _HomePageState extends State<HomePage> {
               Text('Dashboard', style: TextStyle(fontSize: 48)),
               FutureBuilder<List<CustomerModel>>(
                 future: future,
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  }
+                builder:
+                    (
+                      BuildContext context,
+                      AsyncSnapshot<List<CustomerModel>> snapshot,
+                    ) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      }
 
-                  if (snapshot.data == null) {
-                    return Center(
-                      child: Column(
-                        children: [
-                          Text('Ocorreu um erro'),
-                          ElevatedButton(
-                            onPressed: refresh,
-                            child: Text('Tentar novamente'),
+                      if (snapshot.data == null) {
+                        return Center(
+                          child: Column(
+                            children: <Widget>[
+                              Text('Ocorreu um erro'),
+                              ElevatedButton(
+                                onPressed: refresh,
+                                child: Text('Tentar novamente'),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    );
-                  }
+                        );
+                      }
 
-                  final List<CustomerModel> customers = snapshot.data!;
+                      final List<CustomerModel> customers = snapshot.data!;
 
-                  return Wrap(
-                    spacing: 16,
-                    runSpacing: 16,
-                    children: customers
-                        .map(
-                          (CustomerModel customer) => _CustomerContainer(
-                            customer: customer,
-                            onDelete: onDelete,
-                          ),
-                        )
-                        .toList(),
-                  );
-                },
+                      return Wrap(
+                        spacing: 16,
+                        runSpacing: 16,
+                        children: customers
+                            .map(
+                              (CustomerModel customer) => _CustomerContainer(
+                                customer: customer,
+                                onDelete: onDelete,
+                              ),
+                            )
+                            .toList(),
+                      );
+                    },
               ),
             ],
           ),
@@ -149,7 +153,7 @@ class _CustomerContainer extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
 
     return Stack(
-      children: [
+      children: <Widget>[
         MouseRegion(
           cursor: SystemMouseCursors.click,
           child: GestureDetector(

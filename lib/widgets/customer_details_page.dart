@@ -1,3 +1,4 @@
+import 'package:desktop/model/account_model.dart';
 import 'package:desktop/model/customer_model.dart';
 import 'package:desktop/repository/base_repository.dart';
 import 'package:flutter/material.dart';
@@ -13,31 +14,35 @@ class CustomerDetailsPage extends StatefulWidget {
 }
 
 class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
-  late Future<CustomerModel> future;
+  late Future<CustomerModel> customerFuture;
+  late Future<List<AccountModel>> accountsFuture;
   late BaseRepository repo;
 
-  void refresh(int id) {
+  void refresh() {
+    final int id = int.parse(widget.customerId);
     setState(() {
-      future = repo.fetchCustomerById(id);
+      accountsFuture = repo.fetchAccounts(id);
+      customerFuture = repo.fetchCustomerById(id);
     });
   }
 
   @override
   void initState() {
     super.initState();
-
     final int id = int.parse(widget.customerId);
+
     repo = context.read<BaseRepository>();
-    future = repo.fetchCustomerById(id);
+    customerFuture = repo.fetchCustomerById(id);
+    accountsFuture = repo.fetchAccounts(id);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: FutureBuilder(
-        future: future,
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
+      body: FutureBuilder<CustomerModel>(
+        future: customerFuture,
+        builder: (BuildContext context, AsyncSnapshot<CustomerModel> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           }
@@ -48,7 +53,7 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
                 children: <Widget>[
                   Text('Ocorreu um erro.'),
                   ElevatedButton(
-                    onPressed: () => refresh(int.parse(widget.customerId)),
+                    onPressed: refresh,
                     child: Text('Tentar novamente'),
                   ),
                 ],
@@ -58,7 +63,47 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
 
           final CustomerModel customer = snapshot.data!;
 
-          return Column(children: <Widget>[Text(customer.name)]);
+          return Column(
+            children: <Widget>[
+              Text(customer.name),
+              FutureBuilder<List<AccountModel>>(
+                future: accountsFuture,
+                builder: (_, AsyncSnapshot<List<AccountModel>> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: Padding(
+                        padding: EdgeInsetsGeometry.all(16),
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
+
+                  if (snapshot.data == null) {
+                    return Center(
+                      child: Padding(
+                        padding: EdgeInsetsGeometry.all(16),
+                        child: Column(
+                          children: <Widget>[
+                            Text('Error'),
+                            FilledButton(
+                              onPressed: refresh,
+                              child: Text('Try again'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+
+                  return Column(
+                    children: snapshot.data!
+                        .map((AccountModel account) => Text(account.nick!))
+                        .toList(),
+                  );
+                },
+              ),
+            ],
+          );
         },
       ),
     );

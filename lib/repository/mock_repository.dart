@@ -34,8 +34,17 @@ class MockRepository implements BaseRepository {
   }
 
   @override
-  Future<void> addCustomer(CustomerModel customer) {
+  Future<int> addCustomer(CustomerModel customer) {
     // TODO: implement addCustomer
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> addAccounnts({
+    required List<AccountModel> accounts,
+    required int customerId,
+  }) {
+    // TODO: implement addAccounnts
     throw UnimplementedError();
   }
 }

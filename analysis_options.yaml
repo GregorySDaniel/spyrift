@@ -1,1 +1,56 @@
 include: package:flutter_lints/flutter.yaml
+analyzer:  
+  language:    
+    strict-casts: true    
+    strict-inference: true    
+    strict-raw-types: true  
+    
+exclude: [build/**, lib/**.g.dart]
+linter:  
+  rules:    
+    always_put_control_body_on_new_line: false    
+    always_specify_types: true
+    avoid_catches_without_on_clauses: false    
+    avoid_catching_errors: true    
+    avoid_types_on_closure_parameters: false    
+    avoid_unnecessary_containers: true    
+    # only_throw_errors: true    
+    empty_catches: true    
+    join_return_with_assignment: true    
+    unnecessary_this: false    
+    avoid_print: true    
+    constant_identifier_names: false    
+    use_key_in_widget_constructors: false    
+    require_trailing_commas: true    
+    unawaited_futures: true    
+    avoid_unused_constructor_parameters: true    
+    avoid_void_async: true    
+    avoid_dynamic_calls: true    
+    avoid_annotating_with_dynamic: true    
+    lines_longer_than_80_chars: true    
+    always_declare_return_types: true    
+    comment_references: true    
+    discarded_futures: true    
+    literal_only_boolean_expressions: true    
+    no_adjacent_strings_in_list: true    
+    prefer_final_in_for_each: true    
+    prefer_final_locals: true    
+    parameter_assignments: true    
+    avoid_type_to_string: true    
+    prefer_spread_collections: true    
+    prefer_mixin: true    
+    use_super_parameters: true    
+    always_use_package_imports: true    
+    # avoid_positional_boolean_parameters: true    
+    # cascade_invocations: true    
+    directives_ordering: true    
+    missing_whitespace_between_adjacent_strings: true    
+    sort_constructors_first: true    
+    sort_unnamed_constructors_first: true    
+    prefer_null_aware_method_calls: true    
+    tighten_type_of_initializing_formals: true    
+    unnecessary_await_in_return: true    
+    no_leading_underscores_for_local_identifiers: false
+
+
+

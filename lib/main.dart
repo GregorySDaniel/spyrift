@@ -41,11 +41,13 @@ class _MainAppState extends State<MainApp> {
 
   @override
   Widget build(BuildContext context) {
-    final brightness = View.of(context).platformDispatcher.platformBrightness;
+    final Brightness brightness = View.of(
+      context,
+    ).platformDispatcher.platformBrightness;
 
-    TextTheme textTheme = createTextTheme(context, "Poppins", "Poppins");
+    final TextTheme textTheme = createTextTheme(context, "Poppins", "Poppins");
 
-    MaterialTheme theme = MaterialTheme(textTheme);
+    final MaterialTheme theme = MaterialTheme(textTheme);
 
     return MultiProvider(
       providers: <SingleChildWidget>[

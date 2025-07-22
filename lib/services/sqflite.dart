@@ -31,7 +31,7 @@ class Sqflite implements DatabaseInterface {
 
   @override
   Future<int> addCustomer(CustomerModel customer) async {
-    final database = await db;
+    final Database database = await db;
     final int customerId = await database.insert('customers', <String, Object?>{
       'name': customer.name,
     });
@@ -41,18 +41,22 @@ class Sqflite implements DatabaseInterface {
 
   @override
   Future<void> deleteCustomer(int id) async {
-    final database = await db;
-    await database.delete('customers', where: 'id = ?', whereArgs: [id]);
+    final Database database = await db;
+    await database.delete(
+      'customers',
+      where: 'id = ?',
+      whereArgs: <Object?>[id],
+    );
   }
 
   @override
   Future<CustomerModel> fetchCustomerById(int id) async {
-    final database = await db;
+    final Database database = await db;
 
-    final result = await database.query(
+    final List<Map<String, Object?>> result = await database.query(
       'customers',
       where: 'id = ?',
-      whereArgs: [id],
+      whereArgs: <Object?>[id],
     );
 
     return CustomerModel.fromJson(result[0]);
@@ -60,8 +64,8 @@ class Sqflite implements DatabaseInterface {
 
   @override
   Future<List<CustomerModel>> fetchCustomers() async {
-    final database = await db;
-    final result = await database.query('customers');
+    final Database database = await db;
+    final List<Map<String, Object?>> result = await database.query('customers');
 
     final List<CustomerModel> customerList = result
         .map(CustomerModel.fromJson)
@@ -73,11 +77,11 @@ class Sqflite implements DatabaseInterface {
   @override
   Future<void> addAccounts({
     required List<AccountModel> accounts,
-    required customerId,
+    required int customerId,
   }) async {
-    final database = await db;
+    final Database database = await db;
 
-    for (AccountModel account in accounts) {
+    for (final AccountModel account in accounts) {
       await database.insert('accounts', <String, Object?>{
         'nick': account.nick,
         'customer_id': customerId,
@@ -87,11 +91,11 @@ class Sqflite implements DatabaseInterface {
 
   @override
   Future<List<AccountModel>> fetchAccounts(int customerId) async {
-    final database = await db;
-    final result = await database.query(
+    final Database database = await db;
+    final List<Map<String, Object?>> result = await database.query(
       'accounts',
       where: 'customer_id = ?',
-      whereArgs: [customerId],
+      whereArgs: <Object?>[customerId],
     );
 
     final List<AccountModel> accounts = result

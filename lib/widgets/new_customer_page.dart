@@ -15,27 +15,29 @@ class NewCustomerPage extends StatefulWidget {
 
 class _NewCustomerPageState extends State<NewCustomerPage> {
   late BaseRepository repo;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   List<AccountModel> accounts = <AccountModel>[];
   final TextEditingController nameTec = TextEditingController();
+  final TextEditingController accTec = TextEditingController();
 
   void addAccount() {
+    final AccountModel acc = parsefromOpggLink(accTec.text);
     setState(() {
-      accounts.add(
-        AccountModel(
-          tag: '#br1',
-          decayGames: 2,
-          link: 'https://abc123.com.br',
-          nick: 'abc123',
-          ranking: 'Diamond 4 54LP',
-        ),
-      );
+      accounts.add(acc);
     });
+  }
+
+  AccountModel parsefromOpggLink(String link) {
+    // TODO: parse
+
+    return AccountModel();
   }
 
   Future<void> onSubmit() async {
     final CustomerModel customer = CustomerModel(name: nameTec.text);
 
-    repo.addCustomer(customer);
+    final int customerId = await repo.addCustomer(customer);
+    await repo.addAccounnts(accounts: accounts, customerId: customerId);
 
     if (mounted) context.pop(true);
   }
@@ -58,7 +60,11 @@ class _NewCustomerPageState extends State<NewCustomerPage> {
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FilledButton(
-        onPressed: onSubmit,
+        onPressed: () async {
+          if (_formKey.currentState!.validate()) {
+            await onSubmit();
+          }
+        },
         child: Text('Confirm'),
       ),
       appBar: AppBar(),
@@ -67,24 +73,28 @@ class _NewCustomerPageState extends State<NewCustomerPage> {
         child: KeyboardListener(
           autofocus: false,
           focusNode: FocusNode(),
-          onKeyEvent: (event) {
+          onKeyEvent: (KeyEvent event) async {
             if (event is KeyDownEvent &&
                 event.logicalKey == LogicalKeyboardKey.enter) {
-              onSubmit();
+              await onSubmit();
             }
           },
           child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              spacing: 16,
-              children: <Widget>[
-                _LabelInput(label: 'Name', tec: nameTec),
-                _AccountLinks(
-                  accounts: accounts,
-                  addFunction: addAccount,
-                  removeFunction: removeAccount,
-                ),
-              ],
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                spacing: 16,
+                children: <Widget>[
+                  _LabelInput(label: 'Name', tec: nameTec),
+                  _AccountLinks(
+                    accounts: accounts,
+                    addFunction: addAccount,
+                    removeFunction: removeAccount,
+                    accTec: accTec,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -98,15 +108,16 @@ class _AccountLinks extends StatelessWidget {
     required this.accounts,
     required this.addFunction,
     required this.removeFunction,
+    required this.accTec,
   });
 
+  final TextEditingController accTec;
   final List<AccountModel> accounts;
   final VoidCallback addFunction;
   final VoidCallback removeFunction;
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController accTec = TextEditingController();
     final ThemeData theme = Theme.of(context);
 
     return Padding(
@@ -117,7 +128,7 @@ class _AccountLinks extends StatelessWidget {
         children: <Widget>[
           Text('Accounts'),
           KeyboardListener(
-            onKeyEvent: (event) {
+            onKeyEvent: (KeyEvent event) {
               if (event is KeyDownEvent &&
                   event.logicalKey == LogicalKeyboardKey.enter) {
                 addFunction();
@@ -196,7 +207,13 @@ class _LabelInput extends StatelessWidget {
       spacing: 8,
       children: <Widget>[
         Text(label),
-        TextField(
+        TextFormField(
+          validator: (String? value) {
+            if (value == null || value.isEmpty) {
+              return 'Please enter some text';
+            }
+            return null;
+          },
           controller: tec,
           decoration: InputDecoration(
             border: OutlineInputBorder(
