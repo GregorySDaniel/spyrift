@@ -1,6 +1,7 @@
 import 'package:desktop/model/customer_model.dart';
 import 'package:desktop/repository/base_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -30,9 +31,43 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> onDelete(int id) async {
-    repo.deleteCustomer(id);
+    final bool? confirmation = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) => KeyboardListener(
+        focusNode: FocusNode(),
+        autofocus: true,
+        onKeyEvent: (event) {
+          if (event is KeyDownEvent &&
+              event.logicalKey == LogicalKeyboardKey.enter) {
+            context.pop(true);
+          }
+        },
+        child: AlertDialog(
+          title: Text('Confirm'),
+          content: Text('Are you sure you want to delete?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                context.pop(false);
+              },
+              child: Text('No'),
+            ),
 
-    refresh();
+            TextButton(
+              onPressed: () {
+                context.pop(true);
+              },
+              child: Text('Yes'),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (confirmation ?? false) {
+      repo.deleteCustomer(id);
+      refresh();
+    }
   }
 
   Future<void> onPressed() async {
@@ -136,7 +171,7 @@ class _CustomerContainer extends StatelessWidget {
         Positioned(
           right: 0,
           child: IconButton(
-            onPressed: () => onDelete(customer.id),
+            onPressed: () => onDelete(customer.id!),
             icon: Icon(Icons.delete),
           ),
         ),

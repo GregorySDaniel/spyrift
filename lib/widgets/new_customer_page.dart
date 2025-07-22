@@ -1,8 +1,10 @@
 import 'package:desktop/model/account_model.dart';
-import 'package:desktop/services/sqflite.dart';
+import 'package:desktop/model/customer_model.dart';
+import 'package:desktop/repository/base_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class NewCustomerPage extends StatefulWidget {
   const NewCustomerPage({super.key});
@@ -12,6 +14,7 @@ class NewCustomerPage extends StatefulWidget {
 }
 
 class _NewCustomerPageState extends State<NewCustomerPage> {
+  late BaseRepository repo;
   List<AccountModel> accounts = <AccountModel>[];
   final TextEditingController nameTec = TextEditingController();
 
@@ -19,8 +22,6 @@ class _NewCustomerPageState extends State<NewCustomerPage> {
     setState(() {
       accounts.add(
         AccountModel(
-          id: 1,
-          customerId: 1,
           tag: '#br1',
           decayGames: 2,
           link: 'https://abc123.com.br',
@@ -32,7 +33,9 @@ class _NewCustomerPageState extends State<NewCustomerPage> {
   }
 
   Future<void> onSubmit() async {
-    await Sqflite().addCustomer(nameTec.text);
+    final CustomerModel customer = CustomerModel(name: nameTec.text);
+
+    repo.addCustomer(customer);
 
     if (mounted) context.pop(true);
   }
@@ -41,6 +44,13 @@ class _NewCustomerPageState extends State<NewCustomerPage> {
     setState(() {
       accounts.removeAt(0);
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    repo = context.read<BaseRepository>();
   }
 
   @override
@@ -54,18 +64,28 @@ class _NewCustomerPageState extends State<NewCustomerPage> {
       appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            spacing: 16,
-            children: <Widget>[
-              _LabelInput(label: 'Name', tec: nameTec),
-              _AccountLinks(
-                accounts: accounts,
-                addFunction: addAccount,
-                removeFunction: removeAccount,
-              ),
-            ],
+        child: KeyboardListener(
+          autofocus: false,
+          focusNode: FocusNode(),
+          onKeyEvent: (event) {
+            if (event is KeyDownEvent &&
+                event.logicalKey == LogicalKeyboardKey.enter) {
+              onSubmit();
+            }
+          },
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              spacing: 16,
+              children: <Widget>[
+                _LabelInput(label: 'Name', tec: nameTec),
+                _AccountLinks(
+                  accounts: accounts,
+                  addFunction: addAccount,
+                  removeFunction: removeAccount,
+                ),
+              ],
+            ),
           ),
         ),
       ),

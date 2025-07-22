@@ -5,8 +5,6 @@ import 'package:path/path.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class Sqflite implements DatabaseInterface {
-  Sqflite();
-
   Database? _db;
 
   Future<Database> get db async {
@@ -32,9 +30,13 @@ class Sqflite implements DatabaseInterface {
   }
 
   @override
-  Future<void> addCustomer(String name) async {
+  Future<int> addCustomer(CustomerModel customer) async {
     final database = await db;
-    await database.insert('customers', <String, Object?>{'name': name});
+    final int customerId = await database.insert('customers', <String, Object?>{
+      'name': customer.name,
+    });
+
+    return customerId;
   }
 
   @override
@@ -69,8 +71,33 @@ class Sqflite implements DatabaseInterface {
   }
 
   @override
-  Future<int> addAccounts(List<AccountModel> accs) {
-    // TODO: implement addAccount
-    throw UnimplementedError();
+  Future<void> addAccounts({
+    required List<AccountModel> accounts,
+    required customerId,
+  }) async {
+    final database = await db;
+
+    for (AccountModel account in accounts) {
+      await database.insert('accounts', <String, Object?>{
+        'nick': account.nick,
+        'customer_id': customerId,
+      });
+    }
+  }
+
+  @override
+  Future<List<AccountModel>> fetchAccounts(int customerId) async {
+    final database = await db;
+    final result = await database.query(
+      'accounts',
+      where: 'customer_id = ?',
+      whereArgs: [customerId],
+    );
+
+    final List<AccountModel> accounts = result
+        .map(AccountModel.fromJson)
+        .toList();
+
+    return accounts;
   }
 }

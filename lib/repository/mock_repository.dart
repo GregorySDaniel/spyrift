@@ -4,7 +4,7 @@ import 'package:desktop/repository/base_repository.dart';
 
 class MockRepository implements BaseRepository {
   @override
-  Future<List<AccountModel>> fetchAccounts() async {
+  Future<List<AccountModel>> fetchAccounts(int customerId) async {
     await Future<void>.delayed(const Duration(seconds: 2));
 
     return mockAccountsList;
@@ -16,11 +16,7 @@ class MockRepository implements BaseRepository {
 
     return List<CustomerModel>.generate(
       6,
-      (int index) => CustomerModel(
-        id: index,
-        name: 'Customer $index ',
-        accounts: mockAccountsList,
-      ),
+      (int index) => CustomerModel(id: index, name: 'Customer $index '),
     );
   }
 
@@ -28,7 +24,7 @@ class MockRepository implements BaseRepository {
   Future<CustomerModel> fetchCustomerById(int id) async {
     await Future<void>.delayed(const Duration(seconds: 2));
 
-    return CustomerModel(name: 'Customer', id: id, accounts: mockAccountsList);
+    return CustomerModel(name: 'Customer', id: 0);
   }
 
   @override
@@ -36,12 +32,17 @@ class MockRepository implements BaseRepository {
     // TODO: implement deleteCustomer
     throw UnimplementedError();
   }
+
+  @override
+  Future<void> addCustomer(CustomerModel customer) {
+    // TODO: implement addCustomer
+    throw UnimplementedError();
+  }
 }
 
 List<AccountModel> mockAccountsList = List<AccountModel>.generate(
   4,
   (int index) => AccountModel(
-    id: index,
     customerId: index,
     decayGames: index,
     link: 'https/blabla.com/$index',

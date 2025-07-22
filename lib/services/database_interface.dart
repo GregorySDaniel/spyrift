@@ -8,7 +8,12 @@ abstract class DatabaseInterface {
 
   Future<void> deleteCustomer(int id);
 
-  Future<void> addCustomer(String name);
+  Future<void> addCustomer(CustomerModel customer);
 
-  Future<void> addAccounts(List<AccountModel> accounts);
+  Future<void> addAccounts({
+    required List<AccountModel> accounts,
+    required int customerId,
+  });
+
+  Future<List<AccountModel>> fetchAccounts(int customerId);
 }

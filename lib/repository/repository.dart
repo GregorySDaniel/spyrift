@@ -9,9 +9,13 @@ class Repository implements BaseRepository {
   final DatabaseInterface db;
 
   @override
-  Future<List<AccountModel>> fetchAccounts() {
-    // TODO: implement fetchAccounts
-    throw UnimplementedError();
+  Future<List<AccountModel>> fetchAccounts(int customerId) async {
+    try {
+      final List<AccountModel> accounts = await db.fetchAccounts(customerId);
+      return accounts;
+    } catch (e) {
+      throw 'Error $e';
+    }
   }
 
   @override
@@ -38,6 +42,15 @@ class Repository implements BaseRepository {
   Future<void> deleteCustomer(int id) async {
     try {
       await db.deleteCustomer(id);
+    } catch (e) {
+      throw 'Error: $e';
+    }
+  }
+
+  @override
+  Future<void> addCustomer(CustomerModel customer) async {
+    try {
+      await db.addCustomer(customer);
     } catch (e) {
       throw 'Error: $e';
     }
