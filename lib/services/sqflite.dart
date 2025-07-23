@@ -24,7 +24,7 @@ class Sqflite implements DatabaseInterface {
       );
       await _db!.execute('''CREATE TABLE IF NOT EXISTS 
         accounts(id INTEGER PRIMARY KEY, decay_games INTEGER, link TEXT, 
-        nick TEXT, TAG text, ranking TEXT, customer_id INTEGER, 
+        nick TEXT, TAG text, ranking TEXT, region TEXT, customer_id INTEGER, 
         FOREIGN KEY(customer_id) REFERENCES customers(id));''');
     }
   }

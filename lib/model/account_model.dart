@@ -5,6 +5,7 @@ class AccountModel {
     this.ranking,
     this.tag,
     this.decayGames,
+    this.region,
     this.link,
     this.nick,
   });
@@ -16,6 +17,7 @@ class AccountModel {
       customerId = json['customer_id'] as int?,
       ranking = json['ranking'] as String?,
       nick = json['nick'] as String?,
+      region = json['region'] as String?,
       tag = json['tag'] as String?;
 
   final int? id;
@@ -25,4 +27,5 @@ class AccountModel {
   final String? nick;
   final String? tag;
   final String? ranking;
+  final String? region;
 }
