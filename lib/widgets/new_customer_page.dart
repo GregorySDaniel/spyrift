@@ -42,7 +42,7 @@ class _NewCustomerPageState extends State<NewCustomerPage> {
     final String nick = splittedNickTag[0].replaceAll(RegExp(r'%20'), ' ');
     final String region = splittedLink[lastIndex - 1];
 
-    return AccountModel(tag: tag, nick: nick, region: region);
+    return AccountModel(tag: tag, nick: nick, region: region, link: link);
   }
 
   Future<void> onSubmit() async {

@@ -22,9 +22,9 @@ class Sqflite implements DatabaseInterface {
       await _db!.execute(
         '''CREATE TABLE IF NOT EXISTS customers(id INTEGER PRIMARY KEY, name TEXT);''',
       );
-      await _db!.execute('''CREATE TABLE IF NOT EXISTS 
-        accounts(id INTEGER PRIMARY KEY, decay_games INTEGER, link TEXT, 
-        nick TEXT, TAG text, ranking TEXT, region TEXT, customer_id INTEGER, 
+      await _db!.execute('''CREATE TABLE IF NOT EXISTS
+        accounts(id INTEGER PRIMARY KEY, decay_games INTEGER, link TEXT,
+        nick TEXT, tag text, ranking TEXT, region TEXT, customer_id INTEGER,
         FOREIGN KEY(customer_id) REFERENCES customers(id));''');
     }
   }
@@ -84,6 +84,11 @@ class Sqflite implements DatabaseInterface {
     for (final AccountModel account in accounts) {
       await database.insert('accounts', <String, Object?>{
         'nick': account.nick,
+        'region': account.region,
+        'tag': account.tag,
+        'decay_games': account.decayGames,
+        'link': account.link,
+        'ranking': account.ranking,
         'customer_id': customerId,
       });
     }

@@ -132,6 +132,7 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
                                 Text("RANKING: ${account.ranking ?? 'idk'}"),
                                 Text("REGION: ${account.region ?? 'idk'}"),
                                 Text("TAG: ${account.tag ?? 'idk'}"),
+                                Text("DECAY: ${account.decayGames ?? 'idk'}"),
                               ],
                             ),
                           ),
