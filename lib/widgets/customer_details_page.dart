@@ -38,34 +38,53 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(),
-      body: FutureBuilder<CustomerModel>(
-        future: customerFuture,
-        builder: (BuildContext context, AsyncSnapshot<CustomerModel> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-
-          if (snapshot.data == null) {
-            return Center(
-              child: Column(
-                children: <Widget>[
-                  Text('Ocorreu um erro.'),
-                  ElevatedButton(
-                    onPressed: refresh,
-                    child: Text('Tentar novamente'),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          final CustomerModel customer = snapshot.data!;
-
-          return Column(
+      body: Column(
+        spacing: 16,
+        children: <Widget>[
+          Column(
             children: <Widget>[
-              Text(customer.name),
+              FutureBuilder<CustomerModel>(
+                future: customerFuture,
+                builder:
+                    (
+                      BuildContext context,
+                      AsyncSnapshot<CustomerModel> snapshot,
+                    ) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      }
+
+                      if (snapshot.data == null) {
+                        return Center(
+                          child: Column(
+                            children: <Widget>[
+                              Text('Ocorreu um erro.'),
+                              ElevatedButton(
+                                onPressed: refresh,
+                                child: Text('Tentar novamente'),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      final CustomerModel customer = snapshot.data!;
+
+                      return Text(
+                        customer.name,
+                        style: TextStyle(fontSize: 28),
+                      );
+                    },
+              ),
+            ],
+          ),
+          Column(
+            spacing: 8,
+            children: <Widget>[
+              Text('Accounts:'),
               FutureBuilder<List<AccountModel>>(
                 future: accountsFuture,
                 builder: (_, AsyncSnapshot<List<AccountModel>> snapshot) {
@@ -95,16 +114,35 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
                     );
                   }
 
-                  return Column(
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    spacing: 16,
                     children: snapshot.data!
-                        .map((AccountModel account) => Text(account.nick!))
+                        .map(
+                          (AccountModel account) => Container(
+                            padding: EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: theme.colorScheme.primary,
+                              ),
+                            ),
+                            child: Column(
+                              children: <Widget>[
+                                Text("NICK: ${account.nick ?? 'idk'}"),
+                                Text("RANKING: ${account.ranking ?? 'idk'}"),
+                                Text("REGION: ${account.region ?? 'idk'}"),
+                                Text("TAG: ${account.tag ?? 'idk'}"),
+                              ],
+                            ),
+                          ),
+                        )
                         .toList(),
                   );
                 },
               ),
             ],
-          );
-        },
+          ),
+        ],
       ),
     );
   }

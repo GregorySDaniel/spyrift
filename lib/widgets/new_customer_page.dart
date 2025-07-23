@@ -15,7 +15,7 @@ class NewCustomerPage extends StatefulWidget {
 
 class _NewCustomerPageState extends State<NewCustomerPage> {
   late BaseRepository repo;
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _nameFormKey = GlobalKey<FormState>();
   List<AccountModel> accounts = <AccountModel>[];
   final TextEditingController nameTec = TextEditingController();
   final TextEditingController accTec = TextEditingController();
@@ -28,9 +28,20 @@ class _NewCustomerPageState extends State<NewCustomerPage> {
   }
 
   AccountModel parsefromOpggLink(String link) {
-    // TODO: parse
+    // example: https://op.gg/lol/summoners/na/C9%20Loki-kr3
 
-    return AccountModel();
+    final List<String> splittedLink = link.split('/');
+
+    final int lastIndex = splittedLink.length - 1;
+
+    final String nickWithTag = splittedLink[lastIndex];
+    final List<String> splittedNickTag = nickWithTag.split('-');
+
+    final String tag = splittedNickTag[1];
+    final String nick = splittedNickTag[0].replaceAll(RegExp(r'%20'), ' ');
+    final String region = splittedLink[lastIndex - 1];
+
+    return AccountModel(tag: tag, nick: nick, region: region);
   }
 
   Future<void> onSubmit() async {
@@ -61,7 +72,7 @@ class _NewCustomerPageState extends State<NewCustomerPage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FilledButton(
         onPressed: () async {
-          if (_formKey.currentState!.validate()) {
+          if (_nameFormKey.currentState!.validate()) {
             await onSubmit();
           }
         },
@@ -76,12 +87,14 @@ class _NewCustomerPageState extends State<NewCustomerPage> {
           onKeyEvent: (KeyEvent event) async {
             if (event is KeyDownEvent &&
                 event.logicalKey == LogicalKeyboardKey.enter) {
-              await onSubmit();
+              if (_nameFormKey.currentState!.validate()) {
+                await onSubmit();
+              }
             }
           },
           child: SingleChildScrollView(
             child: Form(
-              key: _formKey,
+              key: _nameFormKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 spacing: 16,
@@ -119,6 +132,7 @@ class _AccountLinks extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final GlobalKey<FormState> _accountFormKey = GlobalKey<FormState>();
 
     return Padding(
       padding: EdgeInsetsGeometry.only(bottom: 96),
@@ -131,21 +145,40 @@ class _AccountLinks extends StatelessWidget {
             onKeyEvent: (KeyEvent event) {
               if (event is KeyDownEvent &&
                   event.logicalKey == LogicalKeyboardKey.enter) {
-                addFunction();
-                accTec.clear();
+                if (_accountFormKey.currentState!.validate()) {
+                  addFunction();
+                  accTec.clear();
+                }
               }
             },
             focusNode: FocusNode(),
-            child: TextField(
-              controller: accTec,
-              decoration: InputDecoration(
-                helperText: 'Paste account opgg link here',
-                suffixIcon: IconButton(
-                  onPressed: addFunction,
-                  icon: Icon(Icons.add),
-                ),
-                border: OutlineInputBorder(
-                  borderSide: BorderSide(color: theme.colorScheme.primary),
+            child: Form(
+              key: _accountFormKey,
+              child: TextFormField(
+                validator: (String? value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter some text';
+                  }
+                  if (value.split('/').length < 3) {
+                    return 'Please enter a valid opgg link';
+                  }
+                  return null;
+                },
+                controller: accTec,
+                decoration: InputDecoration(
+                  helperText: 'Paste account opgg link here',
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      if (_accountFormKey.currentState!.validate()) {
+                        addFunction();
+                        accTec.clear();
+                      }
+                    },
+                    icon: Icon(Icons.add),
+                  ),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: theme.colorScheme.primary),
+                  ),
                 ),
               ),
             ),
@@ -166,6 +199,7 @@ class _AccountLinks extends StatelessWidget {
                         children: <Widget>[
                           Text('Nick: ${acc.nick}'),
                           Text('Tag: ${acc.tag}'),
+                          Text('Region: ${acc.region}'),
                           Row(
                             spacing: 4,
                             children: <Widget>[
