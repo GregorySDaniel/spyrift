@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:desktop/model/account_model.dart';
 import 'package:desktop/model/customer_model.dart';
 import 'package:desktop/repository/base_repository.dart';
@@ -53,9 +54,9 @@ class _NewCustomerPageState extends State<NewCustomerPage> {
     if (mounted) context.pop(true);
   }
 
-  void removeAccount() {
+  void removeAccount(int index) {
     setState(() {
-      accounts.removeAt(0);
+      accounts.removeAt(index);
     });
   }
 
@@ -127,7 +128,7 @@ class _AccountLinks extends StatelessWidget {
   final TextEditingController accTec;
   final List<AccountModel> accounts;
   final VoidCallback addFunction;
-  final VoidCallback removeFunction;
+  final void Function(int) removeFunction;
 
   @override
   Widget build(BuildContext context) {
@@ -186,8 +187,8 @@ class _AccountLinks extends StatelessWidget {
           Column(
             spacing: 8,
             children: accounts
-                .map(
-                  (AccountModel acc) => Container(
+                .mapIndexed(
+                  (int index, AccountModel acc) => Container(
                     decoration: BoxDecoration(
                       border: BoxBorder.all(color: theme.colorScheme.onSurface),
                       borderRadius: BorderRadius.circular(4),
@@ -212,7 +213,7 @@ class _AccountLinks extends StatelessWidget {
                           ),
                           IconButton(
                             padding: EdgeInsets.all(0),
-                            onPressed: removeFunction,
+                            onPressed: () => removeFunction(index),
                             icon: Icon(Icons.remove),
                           ),
                         ],
