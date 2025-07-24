@@ -3,6 +3,7 @@ import 'package:desktop/model/customer_model.dart';
 import 'package:desktop/repository/base_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CustomerDetailsPage extends StatefulWidget {
   const CustomerDetailsPage({super.key, required this.customerId});
@@ -117,9 +118,16 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     spacing: 16,
-                    children: snapshot.data!
-                        .map(
-                          (AccountModel account) => Container(
+                    children: snapshot.data!.map((AccountModel account) {
+                      final Uri _url = Uri.parse(account.link!);
+
+                      return MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: GestureDetector(
+                          onTap: () async {
+                            if (!await launchUrl(_url)) throw Exception();
+                          },
+                          child: Container(
                             padding: EdgeInsets.all(16),
                             decoration: BoxDecoration(
                               border: Border.all(
@@ -136,8 +144,9 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
                               ],
                             ),
                           ),
-                        )
-                        .toList(),
+                        ),
+                      );
+                    }).toList(),
                   );
                 },
               ),

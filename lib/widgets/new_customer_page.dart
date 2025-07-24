@@ -29,8 +29,6 @@ class _NewCustomerPageState extends State<NewCustomerPage> {
   }
 
   AccountModel parsefromOpggLink(String link) {
-    // example: https://op.gg/lol/summoners/na/C9%20Loki-kr3
-
     final List<String> splittedLink = link.split('/');
 
     final int lastIndex = splittedLink.length - 1;
