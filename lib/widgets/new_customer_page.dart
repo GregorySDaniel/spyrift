@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:desktop/model/account_model.dart';
 import 'package:desktop/model/customer_model.dart';
@@ -8,7 +10,9 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class NewCustomerPage extends StatefulWidget {
-  const NewCustomerPage({super.key});
+  const NewCustomerPage({super.key, required this.customerId});
+
+  final String? customerId;
 
   @override
   State<NewCustomerPage> createState() => _NewCustomerPageState();
@@ -46,10 +50,24 @@ class _NewCustomerPageState extends State<NewCustomerPage> {
   Future<void> onSubmit() async {
     final CustomerModel customer = CustomerModel(name: nameTec.text);
 
+    if (widget.customerId != null) {
+      final int id = int.parse(widget.customerId!);
+      await repo.editCustomer(customer: customer, customerId: id);
+      if (mounted) context.pop(true);
+      return;
+    }
+
     final int customerId = await repo.addCustomer(customer);
     await repo.addAccounnts(accounts: accounts, customerId: customerId);
-
     if (mounted) context.pop(true);
+  }
+
+  Future<void> fetchCustomerInfos(String id) async {
+    final int customerId = int.parse(id);
+    accounts = await repo.fetchAccounts(customerId);
+    final CustomerModel cust = await repo.fetchCustomerById(customerId);
+    nameTec.text = cust.name;
+    setState(() {});
   }
 
   void removeAccount(int index) {
@@ -63,6 +81,9 @@ class _NewCustomerPageState extends State<NewCustomerPage> {
     super.initState();
 
     repo = context.read<BaseRepository>();
+    if (widget.customerId != null) {
+      unawaited(fetchCustomerInfos(widget.customerId!));
+    }
   }
 
   @override

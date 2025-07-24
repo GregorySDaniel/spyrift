@@ -67,4 +67,16 @@ class Repository implements BaseRepository {
       throw 'Error: $e';
     }
   }
+
+  @override
+  Future<void> editCustomer({
+    required CustomerModel customer,
+    required int customerId,
+  }) async {
+    try {
+      await db.editCustomer(customer: customer, customerId: customerId);
+    } catch (e) {
+      throw 'Error: $e';
+    }
+  }
 }

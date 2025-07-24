@@ -11,4 +11,8 @@ abstract class BaseRepository {
     required List<AccountModel> accounts,
     required int customerId,
   });
+  Future<void> editCustomer({
+    required CustomerModel customer,
+    required int customerId,
+  });
 }

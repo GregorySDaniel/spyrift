@@ -70,6 +70,12 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> onEdit(int id) async {
+    final bool? res = await context.push<bool>('/new?id=$id');
+
+    if (res ?? false) refresh();
+  }
+
   Future<void> onPressed() async {
     final bool? res = await context.push<bool>('/new');
 
@@ -128,6 +134,7 @@ class _HomePageState extends State<HomePage> {
                               (CustomerModel customer) => _CustomerContainer(
                                 customer: customer,
                                 onDelete: onDelete,
+                                onEdit: onEdit,
                               ),
                             )
                             .toList(),
@@ -143,10 +150,15 @@ class _HomePageState extends State<HomePage> {
 }
 
 class _CustomerContainer extends StatelessWidget {
-  const _CustomerContainer({required this.customer, required this.onDelete});
+  const _CustomerContainer({
+    required this.customer,
+    required this.onDelete,
+    required this.onEdit,
+  });
 
   final CustomerModel customer;
   final void Function(int id) onDelete;
+  final void Function(int id) onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -170,7 +182,10 @@ class _CustomerContainer extends StatelessWidget {
           ),
         ),
         Positioned(
-          child: IconButton(onPressed: () {}, icon: Icon(Icons.edit)),
+          child: IconButton(
+            onPressed: () => onEdit(customer.id!),
+            icon: Icon(Icons.edit),
+          ),
         ),
         Positioned(
           right: 0,

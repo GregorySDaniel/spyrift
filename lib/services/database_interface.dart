@@ -16,4 +16,9 @@ abstract class DatabaseInterface {
   });
 
   Future<List<AccountModel>> fetchAccounts(int customerId);
+
+  Future<void> editCustomer({
+    required CustomerModel customer,
+    required int customerId,
+  });
 }

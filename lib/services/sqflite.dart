@@ -19,13 +19,16 @@ class Sqflite implements DatabaseInterface {
     );
 
     if (_db != null) {
+      await _db!.execute("PRAGMA foreign_keys = ON;");
       await _db!.execute(
         '''CREATE TABLE IF NOT EXISTS customers(id INTEGER PRIMARY KEY, name TEXT);''',
       );
-      await _db!.execute('''CREATE TABLE IF NOT EXISTS
+      await _db!.execute(
+        '''CREATE TABLE IF NOT EXISTS
         accounts(id INTEGER PRIMARY KEY, decay_games INTEGER, link TEXT,
         nick TEXT, tag text, ranking TEXT, region TEXT, customer_id INTEGER,
-        FOREIGN KEY(customer_id) REFERENCES customers(id));''');
+        FOREIGN KEY(customer_id) REFERENCES customers(id) ON DELETE CASCADE);''',
+      );
     }
   }
 
@@ -108,5 +111,19 @@ class Sqflite implements DatabaseInterface {
         .toList();
 
     return accounts;
+  }
+
+  @override
+  Future<void> editCustomer({
+    required CustomerModel customer,
+    required int customerId,
+  }) async {
+    final Database database = await db;
+    await database.update(
+      'customers',
+      <String, Object?>{'name': customer.name},
+      where: 'id = ?',
+      whereArgs: <Object?>[customerId],
+    );
   }
 }

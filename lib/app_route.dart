@@ -10,7 +10,11 @@ GoRouter router() {
 List<RouteBase> routes() {
   return <RouteBase>[
     GoRoute(path: '/', builder: (_, __) => HomePage()),
-    GoRoute(path: '/new', builder: (_, __) => NewCustomerPage()),
+    GoRoute(
+      path: '/new',
+      builder: (_, GoRouterState state) =>
+          NewCustomerPage(customerId: state.uri.queryParameters['id']),
+    ),
     GoRoute(
       path: '/customer/:id',
       builder: (_, GoRouterState state) =>
