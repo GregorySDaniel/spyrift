@@ -16,4 +16,6 @@ abstract class BaseRepository {
     required int customerId,
   });
   Future<void> editAccounts({required List<AccountModel> accounts});
+
+  Future<void> removeAccounts({required List<int> accountsIds});
 }

@@ -88,4 +88,13 @@ class Repository implements BaseRepository {
       throw 'Error: $e';
     }
   }
+
+  @override
+  Future<void> removeAccounts({required List<int> accountsIds}) async {
+    try {
+      await db.removeAccounts(accountsIds: accountsIds);
+    } catch (e) {
+      throw 'Error $e';
+    }
+  }
 }

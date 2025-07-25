@@ -60,12 +60,28 @@ class _NewCustomerPageState extends State<NewCustomerPage> {
     return newAccountsOnEditing;
   }
 
+  List<int> getDeletedAccountsIds() {
+    final List<int> ids = <int>[];
+
+    for (final AccountModel acc in retrievedAccounts) {
+      if (!accounts.contains(acc)) {
+        ids.add(acc.id!);
+      }
+    }
+
+    return ids;
+  }
+
   Future<void> onSubmit() async {
     final CustomerModel customer = CustomerModel(name: nameTec.text);
 
     if (widget.customerId != null) {
       final int id = int.parse(widget.customerId!);
       await repo.editCustomer(customer: customer, customerId: id);
+      final List<int> deletedAccountsIds = getDeletedAccountsIds();
+      if (deletedAccountsIds.isNotEmpty) {
+        await repo.removeAccounts(accountsIds: deletedAccountsIds);
+      }
       final List<AccountModel> newAccounts = newAccountsOnEditing();
       await repo.addAccounnts(accounts: newAccounts, customerId: id);
       if (mounted) context.pop(true);

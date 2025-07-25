@@ -23,4 +23,6 @@ abstract class DatabaseInterface {
     required CustomerModel customer,
     required int customerId,
   });
+
+  Future<void> removeAccounts({required List<int> accountsIds});
 }

@@ -147,4 +147,17 @@ class Sqflite implements DatabaseInterface {
       );
     }
   }
+
+  @override
+  Future<void> removeAccounts({required List<int> accountsIds}) async {
+    final Database database = await db;
+
+    for (final int id in accountsIds) {
+      await database.delete(
+        'accounts',
+        where: 'id = ?',
+        whereArgs: <Object?>[id],
+      );
+    }
+  }
 }
