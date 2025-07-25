@@ -56,6 +56,12 @@ class MockRepository implements BaseRepository {
     // TODO: implement editCustomer
     throw UnimplementedError();
   }
+
+  @override
+  Future<void> editAccounts({required List<AccountModel> accounts}) {
+    // TODO: implement editAccounts
+    throw UnimplementedError();
+  }
 }
 
 List<AccountModel> mockAccountsList = List<AccountModel>.generate(

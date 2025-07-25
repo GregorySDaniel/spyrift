@@ -79,4 +79,13 @@ class Repository implements BaseRepository {
       throw 'Error: $e';
     }
   }
+
+  @override
+  Future<void> editAccounts({required List<AccountModel> accounts}) async {
+    try {
+      await db.editAccounts(accounts: accounts);
+    } catch (e) {
+      throw 'Error: $e';
+    }
+  }
 }

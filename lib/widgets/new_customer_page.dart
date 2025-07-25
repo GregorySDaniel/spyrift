@@ -22,6 +22,7 @@ class _NewCustomerPageState extends State<NewCustomerPage> {
   late BaseRepository repo;
   final GlobalKey<FormState> _nameFormKey = GlobalKey<FormState>();
   List<AccountModel> accounts = <AccountModel>[];
+  List<AccountModel> retrievedAccounts = <AccountModel>[];
   final TextEditingController nameTec = TextEditingController();
   final TextEditingController accTec = TextEditingController();
 
@@ -47,12 +48,26 @@ class _NewCustomerPageState extends State<NewCustomerPage> {
     return AccountModel(tag: tag, nick: nick, region: region, link: link);
   }
 
+  List<AccountModel> newAccountsOnEditing() {
+    final List<AccountModel> newAccountsOnEditing = <AccountModel>[];
+
+    for (final AccountModel account in accounts) {
+      if (!retrievedAccounts.contains(account)) {
+        newAccountsOnEditing.add(account);
+      }
+    }
+
+    return newAccountsOnEditing;
+  }
+
   Future<void> onSubmit() async {
     final CustomerModel customer = CustomerModel(name: nameTec.text);
 
     if (widget.customerId != null) {
       final int id = int.parse(widget.customerId!);
       await repo.editCustomer(customer: customer, customerId: id);
+      final List<AccountModel> newAccounts = newAccountsOnEditing();
+      await repo.addAccounnts(accounts: newAccounts, customerId: id);
       if (mounted) context.pop(true);
       return;
     }
@@ -64,7 +79,8 @@ class _NewCustomerPageState extends State<NewCustomerPage> {
 
   Future<void> fetchCustomerInfos(String id) async {
     final int customerId = int.parse(id);
-    accounts = await repo.fetchAccounts(customerId);
+    retrievedAccounts = await repo.fetchAccounts(customerId);
+    accounts.addAll(retrievedAccounts);
     final CustomerModel cust = await repo.fetchCustomerById(customerId);
     nameTec.text = cust.name;
     setState(() {});
