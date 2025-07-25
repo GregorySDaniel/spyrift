@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:desktop/model/account_model.dart';
 import 'package:desktop/model/customer_model.dart';
 import 'package:desktop/repository/base_repository.dart';
+import 'package:desktop/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -72,33 +73,62 @@ class _NewCustomerPageState extends State<NewCustomerPage> {
     return ids;
   }
 
+  Future<void> handleExistingAccounts(CustomerModel customer) async {
+    final int id = int.parse(widget.customerId!);
+    await repo.editCustomer(customer: customer, customerId: id);
+    final List<int> deletedAccountsIds = getDeletedAccountsIds();
+    if (deletedAccountsIds.isNotEmpty) {
+      await repo.removeAccounts(accountsIds: deletedAccountsIds);
+    }
+    final List<AccountModel> newAccounts = newAccountsOnEditing();
+    await repo.addAccounnts(accounts: newAccounts, customerId: id);
+  }
+
   Future<void> onSubmit() async {
+    // TODO: verificar pq ta duplicando contas
+
     final CustomerModel customer = CustomerModel(name: nameTec.text);
 
     if (widget.customerId != null) {
-      final int id = int.parse(widget.customerId!);
-      await repo.editCustomer(customer: customer, customerId: id);
-      final List<int> deletedAccountsIds = getDeletedAccountsIds();
-      if (deletedAccountsIds.isNotEmpty) {
-        await repo.removeAccounts(accountsIds: deletedAccountsIds);
-      }
-      final List<AccountModel> newAccounts = newAccountsOnEditing();
-      await repo.addAccounnts(accounts: newAccounts, customerId: id);
+      await handleExistingAccounts(customer);
       if (mounted) context.pop(true);
       return;
     }
 
-    final int customerId = await repo.addCustomer(customer);
-    await repo.addAccounnts(accounts: accounts, customerId: customerId);
+    final Result<int> customerIdRes = await repo.addCustomer(customer);
+
+    // TODO: tratar erro
+    if (customerIdRes is Ok<int>) {
+      final int customerId = customerIdRes.value;
+
+      await repo.addAccounnts(accounts: accounts, customerId: customerId);
+    }
+
     if (mounted) context.pop(true);
   }
 
   Future<void> fetchCustomerInfos(String id) async {
     final int customerId = int.parse(id);
-    retrievedAccounts = await repo.fetchAccounts(customerId);
-    accounts.addAll(retrievedAccounts);
-    final CustomerModel cust = await repo.fetchCustomerById(customerId);
-    nameTec.text = cust.name;
+
+    // TODO: tratar erro
+    final Result<List<AccountModel>> retrievedAccountsRes = await repo
+        .fetchAccounts(customerId);
+
+    if (retrievedAccountsRes is Ok<List<AccountModel>>) {
+      final List<AccountModel> _retrievedAccounts = retrievedAccountsRes.value;
+      accounts.addAll(_retrievedAccounts);
+    }
+
+    // TODO: tratar erro
+    final Result<CustomerModel> customerRes = await repo.fetchCustomerById(
+      customerId,
+    );
+
+    if (customerRes is Ok<CustomerModel>) {
+      final CustomerModel cust = customerRes.value;
+      nameTec.text = cust.name;
+    }
+
     setState(() {});
   }
 

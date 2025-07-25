@@ -2,6 +2,7 @@ import 'package:desktop/model/account_model.dart';
 import 'package:desktop/model/customer_model.dart';
 import 'package:desktop/repository/base_repository.dart';
 import 'package:desktop/services/database_interface.dart';
+import 'package:desktop/util.dart';
 
 class Repository implements BaseRepository {
   Repository({required this.db});
@@ -9,92 +10,101 @@ class Repository implements BaseRepository {
   final DatabaseInterface db;
 
   @override
-  Future<List<AccountModel>> fetchAccounts(int customerId) async {
+  Future<Result<List<AccountModel>>> fetchAccounts(int customerId) async {
     try {
       final List<AccountModel> accounts = await db.fetchAccounts(customerId);
-      return accounts;
-    } catch (e) {
-      throw 'Error $e';
+      return Result<List<AccountModel>>.ok(accounts);
+    } on Exception catch (e) {
+      return Result<List<AccountModel>>.error(e);
     }
   }
 
   @override
-  Future<CustomerModel> fetchCustomerById(int id) async {
+  Future<Result<CustomerModel>> fetchCustomerById(int id) async {
     try {
       final CustomerModel customer = await db.fetchCustomerById(id);
-      return customer;
-    } catch (e) {
-      throw 'Error: $e';
+      return Result<CustomerModel>.ok(customer);
+    } on Exception catch (e) {
+      return Result<CustomerModel>.error(e);
     }
   }
 
   @override
-  Future<List<CustomerModel>> fetchCustomers() async {
+  Future<Result<List<CustomerModel>>> fetchCustomers() async {
     try {
       final List<CustomerModel> customers = await db.fetchCustomers();
-      return customers;
-    } catch (e) {
-      throw 'Error: $e';
+      return Result<List<CustomerModel>>.ok(customers);
+    } on Exception catch (e) {
+      return Result<List<CustomerModel>>.error(e);
     }
   }
 
   @override
-  Future<void> deleteCustomer(int id) async {
+  Future<Result<void>> deleteCustomer(int id) async {
     try {
       await db.deleteCustomer(id);
-    } catch (e) {
-      throw 'Error: $e';
+      return Result<void>.okEmpty();
+    } on Exception catch (e) {
+      return Result<void>.error(e);
     }
   }
 
   @override
-  Future<int> addCustomer(CustomerModel customer) async {
+  Future<Result<int>> addCustomer(CustomerModel customer) async {
     try {
-      return await db.addCustomer(customer);
-    } catch (e) {
-      throw 'Error: $e';
+      final int id = await db.addCustomer(customer);
+
+      return Result<int>.ok(id);
+    } on Exception catch (e) {
+      return Result<int>.error(e);
     }
   }
 
   @override
-  Future<void> addAccounnts({
+  Future<Result<void>> addAccounnts({
     required List<AccountModel> accounts,
     required int customerId,
   }) async {
     try {
       await db.addAccounts(accounts: accounts, customerId: customerId);
-    } catch (e) {
-      throw 'Error: $e';
+      return Result<void>.okEmpty();
+    } on Exception catch (e) {
+      return Result<void>.error(e);
     }
   }
 
   @override
-  Future<void> editCustomer({
+  Future<Result<void>> editCustomer({
     required CustomerModel customer,
     required int customerId,
   }) async {
     try {
       await db.editCustomer(customer: customer, customerId: customerId);
-    } catch (e) {
-      throw 'Error: $e';
+      return Result<void>.okEmpty();
+    } on Exception catch (e) {
+      return Result<void>.error(e);
     }
   }
 
   @override
-  Future<void> editAccounts({required List<AccountModel> accounts}) async {
+  Future<Result<void>> editAccounts({
+    required List<AccountModel> accounts,
+  }) async {
     try {
       await db.editAccounts(accounts: accounts);
-    } catch (e) {
-      throw 'Error: $e';
+      return Result<void>.okEmpty();
+    } on Exception catch (e) {
+      return Result<void>.error(e);
     }
   }
 
   @override
-  Future<void> removeAccounts({required List<int> accountsIds}) async {
+  Future<Result<void>> removeAccounts({required List<int> accountsIds}) async {
     try {
       await db.removeAccounts(accountsIds: accountsIds);
-    } catch (e) {
-      throw 'Error $e';
+      return Result<void>.okEmpty();
+    } on Exception catch (e) {
+      return Result<void>.error(e);
     }
   }
 }

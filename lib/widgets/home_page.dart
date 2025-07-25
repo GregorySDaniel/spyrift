@@ -1,5 +1,6 @@
 import 'package:desktop/model/customer_model.dart';
 import 'package:desktop/repository/base_repository.dart';
+import 'package:desktop/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -14,7 +15,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late BaseRepository repo;
-  late Future<List<CustomerModel>> future;
+  late Future<Result<List<CustomerModel>>> future;
 
   @override
   void initState() {
@@ -99,12 +100,12 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text('Dashboard', style: TextStyle(fontSize: 48)),
-              FutureBuilder<List<CustomerModel>>(
+              FutureBuilder<Result<List<CustomerModel>>>(
                 future: future,
                 builder:
                     (
                       BuildContext context,
-                      AsyncSnapshot<List<CustomerModel>> snapshot,
+                      AsyncSnapshot<Result<List<CustomerModel>>> snapshot,
                     ) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return Center(child: CircularProgressIndicator());
@@ -114,7 +115,7 @@ class _HomePageState extends State<HomePage> {
                         return Center(
                           child: Column(
                             children: <Widget>[
-                              Text('Ocorreu um erro'),
+                              Text('Error'),
                               ElevatedButton(
                                 onPressed: refresh,
                                 child: Text('Tentar novamente'),
@@ -124,20 +125,46 @@ class _HomePageState extends State<HomePage> {
                         );
                       }
 
-                      final List<CustomerModel> customers = snapshot.data!;
+                      final Result<List<CustomerModel>> response =
+                          snapshot.data!;
 
-                      return Wrap(
-                        spacing: 16,
-                        runSpacing: 16,
-                        children: customers
-                            .map(
-                              (CustomerModel customer) => _CustomerContainer(
-                                customer: customer,
-                                onDelete: onDelete,
-                                onEdit: onEdit,
+                      if (response is Error<List<CustomerModel>>) {
+                        return Center(
+                          child: Column(
+                            children: <Widget>[
+                              Text('Error: ${response.error}'),
+                              ElevatedButton(
+                                onPressed: refresh,
+                                child: Text('Tentar novamente'),
                               ),
-                            )
-                            .toList(),
+                            ],
+                          ),
+                        );
+                      }
+
+                      if (response is Ok<List<CustomerModel>>) {
+                        final List<CustomerModel> customers = response.value;
+
+                        return Wrap(
+                          spacing: 16,
+                          runSpacing: 16,
+                          children: customers
+                              .map(
+                                (CustomerModel customer) => _CustomerContainer(
+                                  customer: customer,
+                                  onDelete: onDelete,
+                                  onEdit: onEdit,
+                                ),
+                              )
+                              .toList(),
+                        );
+                      }
+
+                      return Center(
+                        child: Padding(
+                          padding: EdgeInsetsGeometry.all(16),
+                          child: Center(child: Text('Unexpected error')),
+                        ),
                       );
                     },
               ),

@@ -1,46 +1,49 @@
 import 'package:desktop/model/account_model.dart';
 import 'package:desktop/model/customer_model.dart';
 import 'package:desktop/repository/base_repository.dart';
+import 'package:desktop/util.dart';
 
 class MockRepository implements BaseRepository {
   @override
-  Future<List<AccountModel>> fetchAccounts(int customerId) async {
+  Future<Result<List<AccountModel>>> fetchAccounts(int customerId) async {
     await Future<void>.delayed(const Duration(seconds: 2));
 
-    return mockAccountsList;
+    return Result<List<AccountModel>>.ok(mockAccountsList);
   }
 
   @override
-  Future<List<CustomerModel>> fetchCustomers() async {
+  Future<Result<List<CustomerModel>>> fetchCustomers() async {
     await Future<void>.delayed(const Duration(seconds: 2));
 
-    return List<CustomerModel>.generate(
-      6,
-      (int index) => CustomerModel(id: index, name: 'Customer $index '),
+    return Result<List<CustomerModel>>.ok(
+      List<CustomerModel>.generate(
+        6,
+        (int index) => CustomerModel(id: index, name: 'Customer $index '),
+      ),
     );
   }
 
   @override
-  Future<CustomerModel> fetchCustomerById(int id) async {
+  Future<Result<CustomerModel>> fetchCustomerById(int id) async {
     await Future<void>.delayed(const Duration(seconds: 2));
 
-    return CustomerModel(name: 'Customer', id: 0);
+    return Result<CustomerModel>.ok(CustomerModel(name: 'Customer', id: 0));
   }
 
   @override
-  Future<void> deleteCustomer(int id) {
+  Future<Result<void>> deleteCustomer(int id) {
     // TODO: implement deleteCustomer
     throw UnimplementedError();
   }
 
   @override
-  Future<int> addCustomer(CustomerModel customer) {
+  Future<Result<int>> addCustomer(CustomerModel customer) {
     // TODO: implement addCustomer
     throw UnimplementedError();
   }
 
   @override
-  Future<void> addAccounnts({
+  Future<Result<void>> addAccounnts({
     required List<AccountModel> accounts,
     required int customerId,
   }) {
@@ -49,7 +52,7 @@ class MockRepository implements BaseRepository {
   }
 
   @override
-  Future<void> editCustomer({
+  Future<Result<void>> editCustomer({
     required CustomerModel customer,
     required int customerId,
   }) {
@@ -58,13 +61,13 @@ class MockRepository implements BaseRepository {
   }
 
   @override
-  Future<void> editAccounts({required List<AccountModel> accounts}) {
+  Future<Result<void>> editAccounts({required List<AccountModel> accounts}) {
     // TODO: implement editAccounts
     throw UnimplementedError();
   }
 
   @override
-  Future<void> removeAccounts({required List<int> accountsIds}) {
+  Future<Result<void>> removeAccounts({required List<int> accountsIds}) {
     // TODO: implement removeAccounts
     throw UnimplementedError();
   }

@@ -1,6 +1,7 @@
 import 'package:desktop/model/account_model.dart';
 import 'package:desktop/model/customer_model.dart';
 import 'package:desktop/repository/base_repository.dart';
+import 'package:desktop/util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -15,8 +16,8 @@ class CustomerDetailsPage extends StatefulWidget {
 }
 
 class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
-  late Future<CustomerModel> customerFuture;
-  late Future<List<AccountModel>> accountsFuture;
+  late Future<Result<CustomerModel>> customerFuture;
+  late Future<Result<List<AccountModel>>> accountsFuture;
   late BaseRepository repo;
 
   void refresh() {
@@ -47,12 +48,12 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
         children: <Widget>[
           Column(
             children: <Widget>[
-              FutureBuilder<CustomerModel>(
+              FutureBuilder<Result<CustomerModel>>(
                 future: customerFuture,
                 builder:
                     (
                       BuildContext context,
-                      AsyncSnapshot<CustomerModel> snapshot,
+                      AsyncSnapshot<Result<CustomerModel>> snapshot,
                     ) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return Center(child: CircularProgressIndicator());
@@ -72,11 +73,35 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
                         );
                       }
 
-                      final CustomerModel customer = snapshot.data!;
+                      final Result<CustomerModel> result = snapshot.data!;
 
-                      return Text(
-                        customer.name,
-                        style: TextStyle(fontSize: 28),
+                      if (result is Error<CustomerModel>) {
+                        return Center(
+                          child: Column(
+                            children: <Widget>[
+                              Text('Ocorreu um erro: ${result.error}.'),
+                              ElevatedButton(
+                                onPressed: refresh,
+                                child: Text('Tentar novamente'),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      if (result is Ok<CustomerModel>) {
+                        final CustomerModel customer = result.value;
+                        return Text(
+                          customer.name,
+                          style: TextStyle(fontSize: 28),
+                        );
+                      }
+
+                      return Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Text('Unexpected error'),
+                        ),
                       );
                     },
               ),
@@ -86,9 +111,9 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
             spacing: 8,
             children: <Widget>[
               Text('Accounts:'),
-              FutureBuilder<List<AccountModel>>(
+              FutureBuilder<Result<List<AccountModel>>>(
                 future: accountsFuture,
-                builder: (_, AsyncSnapshot<List<AccountModel>> snapshot) {
+                builder: (_, AsyncSnapshot<Result<List<AccountModel>>> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(
                       child: Padding(
@@ -115,38 +140,76 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
                     );
                   }
 
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    spacing: 16,
-                    children: snapshot.data!.map((AccountModel account) {
-                      final Uri _url = Uri.parse(account.link!);
+                  final Result<List<AccountModel>> response = snapshot.data!;
 
-                      return MouseRegion(
-                        cursor: SystemMouseCursors.click,
-                        child: GestureDetector(
-                          onTap: () async {
-                            if (!await launchUrl(_url)) throw Exception();
-                          },
-                          child: Container(
-                            padding: EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: theme.colorScheme.primary,
+                  if (response is Error<List<AccountModel>>) {
+                    return Center(
+                      child: Padding(
+                        padding: EdgeInsetsGeometry.all(16),
+                        child: Column(
+                          children: <Widget>[
+                            Text('Error: ${response.error}'),
+                            FilledButton(
+                              onPressed: refresh,
+                              child: Text('Try again'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+
+                  if (response is Ok<List<AccountModel>>) {
+                    final List<AccountModel> accs = response.value;
+
+                    return SizedBox(
+                      width: double.maxFinite,
+                      child: Wrap(
+                        spacing: 16,
+                        alignment: WrapAlignment.center,
+                        runSpacing: 16,
+                        children: accs.map((AccountModel account) {
+                          final Uri _url = Uri.parse(account.link!);
+
+                          return MouseRegion(
+                            cursor: SystemMouseCursors.click,
+                            child: GestureDetector(
+                              onTap: () async {
+                                if (!await launchUrl(_url)) throw Exception();
+                              },
+                              child: Container(
+                                padding: EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: theme.colorScheme.primary,
+                                  ),
+                                ),
+                                child: Column(
+                                  children: <Widget>[
+                                    Text("NICK: ${account.nick ?? 'idk'}"),
+                                    Text(
+                                      "RANKING: ${account.ranking ?? 'idk'}",
+                                    ),
+                                    Text("REGION: ${account.region ?? 'idk'}"),
+                                    Text("TAG: ${account.tag ?? 'idk'}"),
+                                    Text(
+                                      "DECAY: ${account.decayGames ?? 'idk'}",
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                            child: Column(
-                              children: <Widget>[
-                                Text("NICK: ${account.nick ?? 'idk'}"),
-                                Text("RANKING: ${account.ranking ?? 'idk'}"),
-                                Text("REGION: ${account.region ?? 'idk'}"),
-                                Text("TAG: ${account.tag ?? 'idk'}"),
-                                Text("DECAY: ${account.decayGames ?? 'idk'}"),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
+                          );
+                        }).toList(),
+                      ),
+                    );
+                  }
+
+                  return Center(
+                    child: Padding(
+                      padding: EdgeInsetsGeometry.all(16),
+                      child: Text('Unexpected error'),
+                    ),
                   );
                 },
               ),
