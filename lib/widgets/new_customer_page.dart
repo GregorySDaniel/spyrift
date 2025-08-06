@@ -64,11 +64,15 @@ class _NewCustomerPageState extends State<NewCustomerPage> {
   List<int> getDeletedAccountsIds() {
     final List<int> ids = <int>[];
 
-    for (final AccountModel acc in retrievedAccounts) {
-      if (!accounts.contains(acc)) {
-        ids.add(acc.id!);
-      }
+    if (accounts.isEmpty) {
+      return retrievedAccounts.map((AccountModel acc) => acc.id!).toList();
     }
+
+    for (final AccountModel retrievedAccount in retrievedAccounts) {
+      if (!accounts.contains(retrievedAccount)) ids.add(retrievedAccount.id!);
+    }
+
+    print(ids);
 
     return ids;
   }
@@ -85,8 +89,6 @@ class _NewCustomerPageState extends State<NewCustomerPage> {
   }
 
   Future<void> onSubmit() async {
-    // TODO: verificar pq ta duplicando contas
-
     final CustomerModel customer = CustomerModel(name: nameTec.text);
 
     if (widget.customerId != null) {
@@ -115,6 +117,7 @@ class _NewCustomerPageState extends State<NewCustomerPage> {
         .fetchAccounts(customerId);
 
     if (retrievedAccountsRes is Ok<List<AccountModel>>) {
+      retrievedAccounts = retrievedAccountsRes.value;
       final List<AccountModel> _retrievedAccounts = retrievedAccountsRes.value;
       accounts.addAll(_retrievedAccounts);
     }
