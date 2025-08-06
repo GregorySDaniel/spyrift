@@ -196,7 +196,7 @@ class _CustomerContainer extends StatelessWidget {
         MouseRegion(
           cursor: SystemMouseCursors.click,
           child: GestureDetector(
-            onTap: () => context.push('/customer/${customer.id}'),
+            onTap: () => context.push('/customer', extra: customer),
             child: Container(
               decoration: BoxDecoration(
                 border: Border.all(color: theme.colorScheme.primary),
