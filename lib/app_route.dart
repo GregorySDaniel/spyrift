@@ -1,6 +1,6 @@
-import 'package:desktop/widgets/customer_details_page.dart';
-import 'package:desktop/widgets/home_page.dart';
-import 'package:desktop/widgets/new_customer_page.dart';
+import 'package:desktop/widgets/customer_details_page/customer_details_page.dart';
+import 'package:desktop/widgets/home_page/home_page.dart';
+import 'package:desktop/widgets/new_customer_page/new_customer_page.dart';
 import 'package:go_router/go_router.dart';
 
 GoRouter router() {
