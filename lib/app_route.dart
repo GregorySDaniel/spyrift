@@ -3,6 +3,7 @@ import 'package:desktop/repository/base_repository.dart';
 import 'package:desktop/widgets/customer_details_page/customer_details_page.dart';
 import 'package:desktop/widgets/customer_details_page/customer_details_page_viewmodel.dart';
 import 'package:desktop/widgets/home_page/home_page.dart';
+import 'package:desktop/widgets/home_page/home_page_viewmodel.dart';
 import 'package:desktop/widgets/new_customer_page/new_customer_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -14,7 +15,17 @@ GoRouter router() {
 
 List<RouteBase> routes() {
   return <RouteBase>[
-    GoRoute(path: '/', builder: (_, __) => HomePage()),
+    GoRoute(
+      path: '/',
+      builder: (BuildContext context, __) {
+        final BaseRepository repo = context.read<BaseRepository>();
+
+        return ChangeNotifierProvider<HomePageViewmodel>(
+          create: (_) => HomePageViewmodel(repo: repo),
+          child: HomePage(),
+        );
+      },
+    ),
     GoRoute(
       path: '/new',
       builder: (_, GoRouterState state) =>

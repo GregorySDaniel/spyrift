@@ -1,6 +1,8 @@
+import 'dart:async';
+
 import 'package:desktop/model/customer_model.dart';
 import 'package:desktop/repository/base_repository.dart';
-import 'package:desktop/util.dart';
+import 'package:desktop/widgets/home_page/home_page_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -14,24 +16,19 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late BaseRepository repo;
-  late Future<Result<List<CustomerModel>>> future;
-
   @override
   void initState() {
     super.initState();
 
-    repo = context.read<BaseRepository>();
-    future = repo.fetchCustomers();
-  }
-
-  void refresh() {
-    setState(() {
-      future = repo.fetchCustomers();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final HomePageViewmodel viewmodel = context.read<HomePageViewmodel>();
+      unawaited(viewmodel.getCustomers());
     });
   }
 
-  Future<void> onDelete(int id) async {
+  void refresh() {}
+
+  Future<void> onDelete(int id, BaseRepository repo) async {
     final bool? confirmation = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) => KeyboardListener(
@@ -87,6 +84,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final HomePageViewmodel viewmodel = context.watch<HomePageViewmodel>();
+
     return Scaffold(
       floatingActionButton: IconButton.filled(
         onPressed: onPressed,
@@ -100,74 +99,23 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text('Dashboard', style: TextStyle(fontSize: 48)),
-              FutureBuilder<Result<List<CustomerModel>>>(
-                future: future,
-                builder:
-                    (
-                      BuildContext context,
-                      AsyncSnapshot<Result<List<CustomerModel>>> snapshot,
-                    ) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator());
-                      }
+              if (viewmodel.isLoading)
+                Center(child: CircularProgressIndicator()),
 
-                      if (snapshot.data == null) {
-                        return Center(
-                          child: Column(
-                            children: <Widget>[
-                              Text('Error'),
-                              ElevatedButton(
-                                onPressed: refresh,
-                                child: Text('Tentar novamente'),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-
-                      final Result<List<CustomerModel>> response =
-                          snapshot.data!;
-
-                      if (response is Error<List<CustomerModel>>) {
-                        return Center(
-                          child: Column(
-                            children: <Widget>[
-                              Text('Error: ${response.error}'),
-                              ElevatedButton(
-                                onPressed: refresh,
-                                child: Text('Tentar novamente'),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-
-                      if (response is Ok<List<CustomerModel>>) {
-                        final List<CustomerModel> customers = response.value;
-
-                        return Wrap(
-                          spacing: 16,
-                          runSpacing: 16,
-                          children: customers
-                              .map(
-                                (CustomerModel customer) => _CustomerContainer(
-                                  customer: customer,
-                                  onDelete: onDelete,
-                                  onEdit: onEdit,
-                                ),
-                              )
-                              .toList(),
-                        );
-                      }
-
-                      return Center(
-                        child: Padding(
-                          padding: EdgeInsetsGeometry.all(16),
-                          child: Center(child: Text('Unexpected error')),
+              if (viewmodel.customers != null)
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: viewmodel.customers!
+                      .map(
+                        (CustomerModel customer) => _CustomerContainer(
+                          customer: customer,
+                          onDelete: onDelete,
+                          onEdit: onEdit,
                         ),
-                      );
-                    },
-              ),
+                      )
+                      .toList(),
+                ),
             ],
           ),
         ),
@@ -184,12 +132,13 @@ class _CustomerContainer extends StatelessWidget {
   });
 
   final CustomerModel customer;
-  final void Function(int id) onDelete;
+  final void Function(int id, BaseRepository repo) onDelete;
   final void Function(int id) onEdit;
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final HomePageViewmodel viewModel = context.watch<HomePageViewmodel>();
 
     return Stack(
       children: <Widget>[
@@ -217,7 +166,7 @@ class _CustomerContainer extends StatelessWidget {
         Positioned(
           right: 0,
           child: IconButton(
-            onPressed: () => onDelete(customer.id!),
+            onPressed: () => onDelete(customer.id!, viewModel.repo),
             icon: Icon(Icons.delete),
           ),
         ),

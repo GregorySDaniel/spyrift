@@ -1,3 +1,38 @@
+import 'package:desktop/model/customer_model.dart';
+import 'package:desktop/repository/base_repository.dart';
+import 'package:desktop/util.dart';
 import 'package:flutter/material.dart';
 
-class HomePageViewmodel extends ChangeNotifier {}
+class HomePageViewmodel extends ChangeNotifier {
+  HomePageViewmodel({required this.repo});
+
+  final BaseRepository repo;
+
+  List<CustomerModel>? customers;
+
+  String? errorMsg;
+  bool isLoading = false;
+
+  Future<void> getCustomers() async {
+    errorMsg = null;
+    isLoading = true;
+    notifyListeners();
+
+    print('abc');
+
+    final Result<List<CustomerModel>> response = await repo.fetchCustomers();
+
+    if (response is Error<List<CustomerModel>>) {
+      errorMsg = 'Ocorreu um erro';
+      isLoading = false;
+      notifyListeners();
+    }
+
+    if (response is Ok<List<CustomerModel>>) {
+      print(customers);
+      customers = response.value;
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+}
