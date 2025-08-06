@@ -33,7 +33,7 @@ sealed class Result<T> {
 
   factory Result.error(Exception error) => Error<T>(error);
 
-  factory Result.okEmpty() => OkEmpty<T>();
+  factory Result.emptyOk() => OkEmpty<T>();
 }
 
 final class Ok<T> extends Result<T> {

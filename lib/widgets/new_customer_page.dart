@@ -72,8 +72,6 @@ class _NewCustomerPageState extends State<NewCustomerPage> {
       if (!accounts.contains(retrievedAccount)) ids.add(retrievedAccount.id!);
     }
 
-    print(ids);
-
     return ids;
   }
 

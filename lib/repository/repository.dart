@@ -43,7 +43,7 @@ class Repository implements BaseRepository {
   Future<Result<void>> deleteCustomer(int id) async {
     try {
       await db.deleteCustomer(id);
-      return Result<void>.okEmpty();
+      return Result<void>.emptyOk();
     } on Exception catch (e) {
       return Result<void>.error(e);
     }
@@ -67,7 +67,7 @@ class Repository implements BaseRepository {
   }) async {
     try {
       await db.addAccounts(accounts: accounts, customerId: customerId);
-      return Result<void>.okEmpty();
+      return Result<void>.emptyOk();
     } on Exception catch (e) {
       return Result<void>.error(e);
     }
@@ -80,7 +80,7 @@ class Repository implements BaseRepository {
   }) async {
     try {
       await db.editCustomer(customer: customer, customerId: customerId);
-      return Result<void>.okEmpty();
+      return Result<void>.emptyOk();
     } on Exception catch (e) {
       return Result<void>.error(e);
     }
@@ -92,7 +92,7 @@ class Repository implements BaseRepository {
   }) async {
     try {
       await db.editAccounts(accounts: accounts);
-      return Result<void>.okEmpty();
+      return Result<void>.emptyOk();
     } on Exception catch (e) {
       return Result<void>.error(e);
     }
@@ -102,7 +102,7 @@ class Repository implements BaseRepository {
   Future<Result<void>> removeAccounts({required List<int> accountsIds}) async {
     try {
       await db.removeAccounts(accountsIds: accountsIds);
-      return Result<void>.okEmpty();
+      return Result<void>.emptyOk();
     } on Exception catch (e) {
       return Result<void>.error(e);
     }

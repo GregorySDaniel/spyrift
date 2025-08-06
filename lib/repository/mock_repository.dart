@@ -31,45 +31,53 @@ class MockRepository implements BaseRepository {
   }
 
   @override
-  Future<Result<void>> deleteCustomer(int id) {
-    // TODO: implement deleteCustomer
-    throw UnimplementedError();
+  Future<Result<void>> deleteCustomer(int id) async {
+    await Future<void>.delayed(const Duration(seconds: 2));
+
+    return Result<void>.emptyOk();
   }
 
   @override
-  Future<Result<int>> addCustomer(CustomerModel customer) {
-    // TODO: implement addCustomer
-    throw UnimplementedError();
+  Future<Result<int>> addCustomer(CustomerModel customer) async {
+    await Future<void>.delayed(const Duration(seconds: 2));
+
+    return Result<int>.ok(1);
   }
 
   @override
   Future<Result<void>> addAccounnts({
     required List<AccountModel> accounts,
     required int customerId,
-  }) {
-    // TODO: implement addAccounnts
-    throw UnimplementedError();
+  }) async {
+    await Future<void>.delayed(const Duration(seconds: 2));
+
+    return Result<void>.emptyOk();
   }
 
   @override
   Future<Result<void>> editCustomer({
     required CustomerModel customer,
     required int customerId,
-  }) {
-    // TODO: implement editCustomer
-    throw UnimplementedError();
+  }) async {
+    await Future<void>.delayed(const Duration(seconds: 2));
+
+    return Result<void>.emptyOk();
   }
 
   @override
-  Future<Result<void>> editAccounts({required List<AccountModel> accounts}) {
-    // TODO: implement editAccounts
-    throw UnimplementedError();
+  Future<Result<void>> editAccounts({
+    required List<AccountModel> accounts,
+  }) async {
+    await Future<void>.delayed(const Duration(seconds: 2));
+
+    return Result<void>.emptyOk();
   }
 
   @override
-  Future<Result<void>> removeAccounts({required List<int> accountsIds}) {
-    // TODO: implement removeAccounts
-    throw UnimplementedError();
+  Future<Result<void>> removeAccounts({required List<int> accountsIds}) async {
+    await Future<void>.delayed(const Duration(seconds: 2));
+
+    return Result<void>.emptyOk();
   }
 }
 
