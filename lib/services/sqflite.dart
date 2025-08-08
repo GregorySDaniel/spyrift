@@ -128,27 +128,6 @@ class Sqflite implements DatabaseInterface {
   }
 
   @override
-  Future<void> editAccounts({required List<AccountModel> accounts}) async {
-    final Database database = await db;
-
-    for (final AccountModel account in accounts) {
-      await database.update(
-        'accounts',
-        <String, Object?>{
-          'nick': account.nick,
-          'region': account.region,
-          'tag': account.tag,
-          'decay_games': account.decayGames,
-          'link': account.link,
-          'ranking': account.ranking,
-        },
-        where: 'id = ?',
-        whereArgs: <Object?>[account.id],
-      );
-    }
-  }
-
-  @override
   Future<void> removeAccounts({required List<int> accountsIds}) async {
     final Database database = await db;
 
@@ -159,5 +138,24 @@ class Sqflite implements DatabaseInterface {
         whereArgs: <Object?>[id],
       );
     }
+  }
+
+  @override
+  Future<void> editAccount({required AccountModel account}) async {
+    final Database database = await db;
+
+    await database.update(
+      'accounts',
+      <String, Object?>{
+        'nick': account.nick,
+        'region': account.region,
+        'tag': account.tag,
+        'decay_games': account.decayGames,
+        'link': account.link,
+        'ranking': account.ranking,
+      },
+      where: 'id = ?',
+      whereArgs: <Object?>[account.id],
+    );
   }
 }

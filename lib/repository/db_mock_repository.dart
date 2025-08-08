@@ -65,19 +65,16 @@ class DbMockRepository implements DbBaseRepository {
   }
 
   @override
-  Future<Result<void>> editAccounts({
-    required List<AccountModel> accounts,
-  }) async {
+  Future<Result<void>> removeAccounts({required List<int> accountsIds}) async {
     await Future<void>.delayed(const Duration(seconds: 2));
 
     return Result<void>.emptyOk();
   }
 
   @override
-  Future<Result<void>> removeAccounts({required List<int> accountsIds}) async {
-    await Future<void>.delayed(const Duration(seconds: 2));
-
-    return Result<void>.emptyOk();
+  Future<Result<void>> editAccount({required AccountModel account}) {
+    // TODO: implement editAccount
+    throw UnimplementedError();
   }
 }
 

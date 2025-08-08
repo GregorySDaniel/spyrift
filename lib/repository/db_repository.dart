@@ -87,11 +87,9 @@ class DbRepository implements DbBaseRepository {
   }
 
   @override
-  Future<Result<void>> editAccounts({
-    required List<AccountModel> accounts,
-  }) async {
+  Future<Result<void>> editAccount({required AccountModel account}) async {
     try {
-      await db.editAccounts(accounts: accounts);
+      await db.editAccount(account: account);
       return Result<void>.emptyOk();
     } on Exception catch (e) {
       return Result<void>.error(e);
