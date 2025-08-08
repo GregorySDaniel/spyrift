@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:desktop/model/customer_model.dart';
-import 'package:desktop/repository/base_repository.dart';
+import 'package:desktop/repository/db_base_repository.dart';
 import 'package:desktop/widgets/home_page/home_page_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,7 +28,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> onDelete(
     int id,
-    BaseRepository repo,
+    DbBaseRepository repo,
     HomePageViewmodel vm,
   ) async {
     final bool? confirmation = await showDialog<bool>(
@@ -134,7 +134,7 @@ class _CustomerContainer extends StatelessWidget {
   });
 
   final CustomerModel customer;
-  final void Function(int id, BaseRepository repo, HomePageViewmodel vm)
+  final void Function(int id, DbBaseRepository repo, HomePageViewmodel vm)
   onDelete;
   final void Function(int id, HomePageViewmodel vm) onEdit;
 

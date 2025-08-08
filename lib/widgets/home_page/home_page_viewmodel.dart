@@ -1,12 +1,12 @@
 import 'package:desktop/model/customer_model.dart';
-import 'package:desktop/repository/base_repository.dart';
+import 'package:desktop/repository/db_base_repository.dart';
 import 'package:desktop/util.dart';
 import 'package:flutter/material.dart';
 
 class HomePageViewmodel extends ChangeNotifier {
   HomePageViewmodel({required this.repo});
 
-  final BaseRepository repo;
+  final DbBaseRepository repo;
 
   List<CustomerModel>? customers;
 

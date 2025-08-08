@@ -1,5 +1,6 @@
 import 'package:desktop/model/customer_model.dart';
-import 'package:desktop/repository/base_repository.dart';
+import 'package:desktop/repository/db_base_repository.dart';
+import 'package:desktop/services/opgg.dart';
 import 'package:desktop/widgets/customer_details_page/customer_details_page.dart';
 import 'package:desktop/widgets/customer_details_page/customer_details_page_viewmodel.dart';
 import 'package:desktop/widgets/home_page/home_page.dart';
@@ -19,7 +20,7 @@ List<RouteBase> routes() {
     GoRoute(
       path: '/',
       builder: (BuildContext context, __) {
-        final BaseRepository repo = context.read<BaseRepository>();
+        final DbBaseRepository repo = context.read<DbBaseRepository>();
 
         return ChangeNotifierProvider<HomePageViewmodel>(
           create: (_) => HomePageViewmodel(repo: repo),
@@ -30,7 +31,7 @@ List<RouteBase> routes() {
     GoRoute(
       path: '/new',
       builder: (BuildContext context, GoRouterState state) {
-        final BaseRepository repo = context.read<BaseRepository>();
+        final DbBaseRepository repo = context.read<DbBaseRepository>();
         final String? customerId = state.uri.queryParameters['id'];
 
         return ChangeNotifierProvider<NewCustomerPageViewmodel>(
@@ -43,12 +44,17 @@ List<RouteBase> routes() {
     GoRoute(
       path: '/customer',
       builder: (BuildContext context, GoRouterState state) {
-        final BaseRepository repo = context.read<BaseRepository>();
+        final DbBaseRepository repo = context.read<DbBaseRepository>();
         final CustomerModel customer = state.extra as CustomerModel;
+        // TODO: instanciar na raiz
+        final Opgg opgg = Opgg();
 
         return ChangeNotifierProvider<CustomerDetailsPageViewmodel>(
-          create: (_) =>
-              CustomerDetailsPageViewmodel(repo: repo, customer: customer),
+          create: (_) => CustomerDetailsPageViewmodel(
+            repo: repo,
+            customer: customer,
+            opgg: opgg,
+          ),
           child: CustomerDetailsPage(),
         );
       },

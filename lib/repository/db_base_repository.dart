@@ -2,7 +2,7 @@ import 'package:desktop/model/account_model.dart';
 import 'package:desktop/model/customer_model.dart';
 import 'package:desktop/util.dart';
 
-abstract class BaseRepository {
+abstract class DbBaseRepository {
   Future<Result<List<AccountModel>>> fetchAccounts(int customerId);
   Future<Result<List<CustomerModel>>> fetchCustomers();
   Future<Result<CustomerModel>> fetchCustomerById(int id);

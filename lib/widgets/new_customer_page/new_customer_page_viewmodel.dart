@@ -1,13 +1,13 @@
 import 'package:desktop/model/account_model.dart';
 import 'package:desktop/model/customer_model.dart';
-import 'package:desktop/repository/base_repository.dart';
+import 'package:desktop/repository/db_base_repository.dart';
 import 'package:desktop/util.dart';
 import 'package:flutter/material.dart';
 
 class NewCustomerPageViewmodel extends ChangeNotifier {
   NewCustomerPageViewmodel({required this.repo, required this.customerId});
 
-  final BaseRepository repo;
+  final DbBaseRepository repo;
   final String? customerId;
 
   final TextEditingController accTec = TextEditingController();

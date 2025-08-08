@@ -1,9 +1,9 @@
 import 'package:desktop/model/account_model.dart';
 import 'package:desktop/model/customer_model.dart';
-import 'package:desktop/repository/base_repository.dart';
+import 'package:desktop/repository/db_base_repository.dart';
 import 'package:desktop/util.dart';
 
-class MockRepository implements BaseRepository {
+class DbMockRepository implements DbBaseRepository {
   @override
   Future<Result<List<AccountModel>>> fetchAccounts(int customerId) async {
     await Future<void>.delayed(const Duration(seconds: 2));

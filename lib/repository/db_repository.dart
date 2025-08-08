@@ -1,11 +1,11 @@
 import 'package:desktop/model/account_model.dart';
 import 'package:desktop/model/customer_model.dart';
-import 'package:desktop/repository/base_repository.dart';
+import 'package:desktop/repository/db_base_repository.dart';
 import 'package:desktop/services/database_interface.dart';
 import 'package:desktop/util.dart';
 
-class Repository implements BaseRepository {
-  Repository({required this.db});
+class DbRepository implements DbBaseRepository {
+  DbRepository({required this.db});
 
   final DatabaseInterface db;
 

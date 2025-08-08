@@ -1,7 +1,7 @@
 import 'package:desktop/app_route.dart';
-import 'package:desktop/repository/base_repository.dart';
-import 'package:desktop/repository/mock_repository.dart';
-import 'package:desktop/repository/repository.dart';
+import 'package:desktop/repository/db_base_repository.dart';
+import 'package:desktop/repository/db_repository.dart';
+import 'package:desktop/repository/db_mock_repository.dart';
 import 'package:desktop/services/database_interface.dart';
 import 'package:desktop/services/sqflite.dart';
 import 'package:desktop/theme.dart';
@@ -28,7 +28,7 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  late BaseRepository repo;
+  late DbBaseRepository repo;
   late DatabaseInterface db;
 
   @override
@@ -36,7 +36,7 @@ class _MainAppState extends State<MainApp> {
     super.initState();
 
     db = Sqflite();
-    repo = useMock ? MockRepository() : Repository(db: db);
+    repo = useMock ? DbMockRepository() : DbRepository(db: db);
   }
 
   @override
@@ -51,7 +51,7 @@ class _MainAppState extends State<MainApp> {
 
     return MultiProvider(
       providers: <SingleChildWidget>[
-        Provider<BaseRepository>.value(value: repo),
+        Provider<DbBaseRepository>.value(value: repo),
         Provider<DatabaseInterface>.value(value: db),
       ],
       child: MaterialApp.router(
