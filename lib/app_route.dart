@@ -5,6 +5,7 @@ import 'package:desktop/widgets/customer_details_page/customer_details_page_view
 import 'package:desktop/widgets/home_page/home_page.dart';
 import 'package:desktop/widgets/home_page/home_page_viewmodel.dart';
 import 'package:desktop/widgets/new_customer_page/new_customer_page.dart';
+import 'package:desktop/widgets/new_customer_page/new_customer_page_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -28,8 +29,16 @@ List<RouteBase> routes() {
     ),
     GoRoute(
       path: '/new',
-      builder: (_, GoRouterState state) =>
-          NewCustomerPage(customerId: state.uri.queryParameters['id']),
+      builder: (BuildContext context, GoRouterState state) {
+        final BaseRepository repo = context.read<BaseRepository>();
+        final String? customerId = state.uri.queryParameters['id'];
+
+        return ChangeNotifierProvider<NewCustomerPageViewmodel>(
+          create: (_) =>
+              NewCustomerPageViewmodel(repo: repo, customerId: customerId),
+          child: NewCustomerPage(),
+        );
+      },
     ),
     GoRoute(
       path: '/customer',

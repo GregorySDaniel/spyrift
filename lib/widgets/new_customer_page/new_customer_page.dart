@@ -2,161 +2,47 @@ import 'dart:async';
 
 import 'package:collection/collection.dart';
 import 'package:desktop/model/account_model.dart';
-import 'package:desktop/model/customer_model.dart';
-import 'package:desktop/repository/base_repository.dart';
-import 'package:desktop/util.dart';
+import 'package:desktop/widgets/new_customer_page/new_customer_page_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class NewCustomerPage extends StatefulWidget {
-  const NewCustomerPage({super.key, required this.customerId});
-
-  final String? customerId;
+  const NewCustomerPage({super.key});
 
   @override
   State<NewCustomerPage> createState() => _NewCustomerPageState();
 }
 
 class _NewCustomerPageState extends State<NewCustomerPage> {
-  late BaseRepository repo;
-  final GlobalKey<FormState> _nameFormKey = GlobalKey<FormState>();
-  List<AccountModel> accounts = <AccountModel>[];
-  List<AccountModel> retrievedAccounts = <AccountModel>[];
-  final TextEditingController nameTec = TextEditingController();
-  final TextEditingController accTec = TextEditingController();
-
-  void addAccount() {
-    final AccountModel acc = parsefromOpggLink(accTec.text);
-    setState(() {
-      accounts.add(acc);
-    });
-  }
-
-  AccountModel parsefromOpggLink(String link) {
-    final List<String> splittedLink = link.split('/');
-
-    final int lastIndex = splittedLink.length - 1;
-
-    final String nickWithTag = splittedLink[lastIndex];
-    final List<String> splittedNickTag = nickWithTag.split('-');
-
-    final String tag = splittedNickTag[1];
-    final String nick = splittedNickTag[0].replaceAll(RegExp(r'%20'), ' ');
-    final String region = splittedLink[lastIndex - 1];
-
-    return AccountModel(tag: tag, nick: nick, region: region, link: link);
-  }
-
-  List<AccountModel> newAccountsOnEditing() {
-    final List<AccountModel> newAccountsOnEditing = <AccountModel>[];
-
-    for (final AccountModel account in accounts) {
-      if (!retrievedAccounts.contains(account)) {
-        newAccountsOnEditing.add(account);
-      }
-    }
-
-    return newAccountsOnEditing;
-  }
-
-  List<int> getDeletedAccountsIds() {
-    final List<int> ids = <int>[];
-
-    if (accounts.isEmpty) {
-      return retrievedAccounts.map((AccountModel acc) => acc.id!).toList();
-    }
-
-    for (final AccountModel retrievedAccount in retrievedAccounts) {
-      if (!accounts.contains(retrievedAccount)) ids.add(retrievedAccount.id!);
-    }
-
-    return ids;
-  }
-
-  Future<void> handleExistingAccounts(CustomerModel customer) async {
-    final int id = int.parse(widget.customerId!);
-    await repo.editCustomer(customer: customer, customerId: id);
-    final List<int> deletedAccountsIds = getDeletedAccountsIds();
-    if (deletedAccountsIds.isNotEmpty) {
-      await repo.removeAccounts(accountsIds: deletedAccountsIds);
-    }
-    final List<AccountModel> newAccounts = newAccountsOnEditing();
-    await repo.addAccounnts(accounts: newAccounts, customerId: id);
-  }
-
-  Future<void> onSubmit() async {
-    final CustomerModel customer = CustomerModel(name: nameTec.text);
-
-    if (widget.customerId != null) {
-      await handleExistingAccounts(customer);
-      if (mounted) context.pop(true);
-      return;
-    }
-
-    final Result<int> customerIdRes = await repo.addCustomer(customer);
-
-    // TODO: tratar erro
-    if (customerIdRes is Ok<int>) {
-      final int customerId = customerIdRes.value;
-
-      await repo.addAccounnts(accounts: accounts, customerId: customerId);
-    }
-
-    if (mounted) context.pop(true);
-  }
-
-  Future<void> fetchCustomerInfos(String id) async {
-    final int customerId = int.parse(id);
-
-    // TODO: tratar erro
-    final Result<List<AccountModel>> retrievedAccountsRes = await repo
-        .fetchAccounts(customerId);
-
-    if (retrievedAccountsRes is Ok<List<AccountModel>>) {
-      retrievedAccounts = retrievedAccountsRes.value;
-      final List<AccountModel> _retrievedAccounts = retrievedAccountsRes.value;
-      accounts.addAll(_retrievedAccounts);
-    }
-
-    // TODO: tratar erro
-    final Result<CustomerModel> customerRes = await repo.fetchCustomerById(
-      customerId,
-    );
-
-    if (customerRes is Ok<CustomerModel>) {
-      final CustomerModel cust = customerRes.value;
-      nameTec.text = cust.name;
-    }
-
-    setState(() {});
-  }
-
-  void removeAccount(int index) {
-    setState(() {
-      accounts.removeAt(index);
-    });
-  }
-
   @override
   void initState() {
     super.initState();
 
-    repo = context.read<BaseRepository>();
-    if (widget.customerId != null) {
-      unawaited(fetchCustomerInfos(widget.customerId!));
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final NewCustomerPageViewmodel viewmodel = context
+          .read<NewCustomerPageViewmodel>();
+
+      if (viewmodel.customerId != null) {
+        unawaited(viewmodel.fetchCustomerInfos());
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final NewCustomerPageViewmodel viewmodel = context
+        .watch<NewCustomerPageViewmodel>();
+
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FilledButton(
         onPressed: () async {
-          if (_nameFormKey.currentState!.validate()) {
-            await onSubmit();
+          if (viewmodel.nameFormKey.currentState!.validate()) {
+            if (await viewmodel.onSubmit()) {
+              if (mounted) context.pop(true);
+            }
           }
         },
         child: Text('Confirm'),
@@ -170,24 +56,26 @@ class _NewCustomerPageState extends State<NewCustomerPage> {
           onKeyEvent: (KeyEvent event) async {
             if (event is KeyDownEvent &&
                 event.logicalKey == LogicalKeyboardKey.enter) {
-              if (_nameFormKey.currentState!.validate()) {
-                await onSubmit();
+              if (viewmodel.nameFormKey.currentState!.validate()) {
+                if (await viewmodel.onSubmit()) {
+                  if (mounted) context.pop(true);
+                }
               }
             }
           },
           child: SingleChildScrollView(
             child: Form(
-              key: _nameFormKey,
+              key: viewmodel.nameFormKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 spacing: 16,
                 children: <Widget>[
-                  _LabelInput(label: 'Name', tec: nameTec),
+                  _LabelInput(label: 'Name', tec: viewmodel.nameTec),
                   _AccountLinks(
-                    accounts: accounts,
-                    addFunction: addAccount,
-                    removeFunction: removeAccount,
-                    accTec: accTec,
+                    accounts: viewmodel.accounts,
+                    addFunction: viewmodel.addAccount,
+                    removeFunction: viewmodel.removeAccount,
+                    accTec: viewmodel.accTec,
                   ),
                 ],
               ),

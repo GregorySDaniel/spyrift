@@ -26,9 +26,11 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void refresh() {}
-
-  Future<void> onDelete(int id, BaseRepository repo) async {
+  Future<void> onDelete(
+    int id,
+    BaseRepository repo,
+    HomePageViewmodel vm,
+  ) async {
     final bool? confirmation = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) => KeyboardListener(
@@ -64,21 +66,21 @@ class _HomePageState extends State<HomePage> {
 
     if (confirmation ?? false) {
       await repo.deleteCustomer(id);
-      refresh();
+      await vm.refresh();
     }
   }
 
-  Future<void> onEdit(int id) async {
+  Future<void> onEdit(int id, HomePageViewmodel vm) async {
     final bool? res = await context.push<bool>('/new?id=$id');
 
-    if (res ?? false) refresh();
+    if (res ?? false) await vm.refresh();
   }
 
-  Future<void> onPressed() async {
+  Future<void> onPressed(HomePageViewmodel vm) async {
     final bool? res = await context.push<bool>('/new');
 
     if (res ?? false) {
-      refresh();
+      await vm.refresh();
     }
   }
 
@@ -88,7 +90,7 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       floatingActionButton: IconButton.filled(
-        onPressed: onPressed,
+        onPressed: () => onPressed(viewmodel),
         icon: Icon(Icons.add),
       ),
       body: Padding(
@@ -132,8 +134,9 @@ class _CustomerContainer extends StatelessWidget {
   });
 
   final CustomerModel customer;
-  final void Function(int id, BaseRepository repo) onDelete;
-  final void Function(int id) onEdit;
+  final void Function(int id, BaseRepository repo, HomePageViewmodel vm)
+  onDelete;
+  final void Function(int id, HomePageViewmodel vm) onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -159,14 +162,14 @@ class _CustomerContainer extends StatelessWidget {
         ),
         Positioned(
           child: IconButton(
-            onPressed: () => onEdit(customer.id!),
+            onPressed: () => onEdit(customer.id!, viewModel),
             icon: Icon(Icons.edit),
           ),
         ),
         Positioned(
           right: 0,
           child: IconButton(
-            onPressed: () => onDelete(customer.id!, viewModel.repo),
+            onPressed: () => onDelete(customer.id!, viewModel.repo, viewModel),
             icon: Icon(Icons.delete),
           ),
         ),

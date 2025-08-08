@@ -13,12 +13,14 @@ class HomePageViewmodel extends ChangeNotifier {
   String? errorMsg;
   bool isLoading = false;
 
+  Future<void> refresh() async {
+    await getCustomers();
+  }
+
   Future<void> getCustomers() async {
     errorMsg = null;
     isLoading = true;
     notifyListeners();
-
-    print('abc');
 
     final Result<List<CustomerModel>> response = await repo.fetchCustomers();
 
@@ -29,7 +31,6 @@ class HomePageViewmodel extends ChangeNotifier {
     }
 
     if (response is Ok<List<CustomerModel>>) {
-      print(customers);
       customers = response.value;
       isLoading = false;
       notifyListeners();
