@@ -23,6 +23,11 @@ class CustomerDetailsPageViewmodel extends ChangeNotifier {
   bool isLoading = false;
   String? errorMsg;
 
+  Future<void> refresh() async {
+    await getAccounts();
+    notifyListeners();
+  }
+
   Future<void> fetchAccountsRanking() async {
     if (accounts == null) return;
 
@@ -30,8 +35,21 @@ class CustomerDetailsPageViewmodel extends ChangeNotifier {
       if (account.link == null) continue;
 
       final String ranking = await opgg.fetchAccountRanking(url: account.link!);
-      // TODO: update no banco
+      final AccountModel accountWithRanking = AccountModel(
+        id: account.id,
+        customerId: customer.id,
+        ranking: ranking,
+        tag: account.tag,
+        decayGames: account.decayGames,
+        region: account.region,
+        link: account.link,
+        nick: account.nick,
+      );
+
+      await repo.editAccount(account: accountWithRanking);
     }
+
+    await refresh();
   }
 
   Future<void> getAccounts() async {
