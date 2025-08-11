@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:spyrift/model/customer_model.dart';
 import 'package:spyrift/repository/db_base_repository.dart';
-import 'package:spyrift/services/opgg.dart';
+import 'package:spyrift/repository/web_repository_interface.dart';
 import 'package:spyrift/widgets/customer_details_page/customer_details_page.dart';
 import 'package:spyrift/widgets/customer_details_page/customer_details_page_viewmodel.dart';
 import 'package:spyrift/widgets/home_page/home_page.dart';
@@ -44,16 +44,16 @@ List<RouteBase> routes() {
     GoRoute(
       path: '/customer',
       builder: (BuildContext context, GoRouterState state) {
-        final DbBaseRepository repo = context.read<DbBaseRepository>();
+        final DbBaseRepository dbRepo = context.read<DbBaseRepository>();
         final CustomerModel customer = state.extra as CustomerModel;
-        // TODO: instanciar na raiz
-        final Opgg opgg = Opgg();
+        final WebRepositoryInterface webRepositoryInterface = context
+            .read<WebRepositoryInterface>();
 
         return ChangeNotifierProvider<CustomerDetailsPageViewmodel>(
           create: (_) => CustomerDetailsPageViewmodel(
-            repo: repo,
+            dbRepo: dbRepo,
             customer: customer,
-            opgg: opgg,
+            webRepo: webRepositoryInterface,
           ),
           child: CustomerDetailsPage(),
         );

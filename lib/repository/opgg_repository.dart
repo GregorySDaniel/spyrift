@@ -1,14 +1,16 @@
-import 'package:spyrift/services/opgg.dart';
+import 'package:spyrift/repository/web_repository_interface.dart';
+import 'package:spyrift/services/web_interface.dart';
 import 'package:spyrift/util.dart';
 
-class OpggRepository {
-  OpggRepository({required this.opgg});
+class OpggRepository implements WebRepositoryInterface {
+  OpggRepository({required this.webService});
 
-  final Opgg opgg;
+  final WebInterface webService;
 
-  Future<Result<String>> fetchAccountRanking({required String url}) async {
+  @override
+  Future<Result<String>> fetchAccountRanking({required String link}) async {
     try {
-      final String ranking = await opgg.fetchAccountRanking(url: url);
+      final String ranking = await webService.fetchAccountRanking(link: link);
       return Result<String>.ok(ranking);
     } on Exception catch (e) {
       return Result<String>.error(e);

@@ -4,18 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:spyrift/model/account_model.dart';
 import 'package:spyrift/model/customer_model.dart';
 import 'package:spyrift/repository/db_base_repository.dart';
-import 'package:spyrift/services/opgg.dart';
+import 'package:spyrift/repository/web_repository_interface.dart';
 import 'package:spyrift/util.dart';
 
 class CustomerDetailsPageViewmodel extends ChangeNotifier {
   CustomerDetailsPageViewmodel({
-    required this.repo,
+    required this.dbRepo,
     required this.customer,
-    required this.opgg,
+    required this.webRepo,
   });
 
-  final DbBaseRepository repo;
-  final Opgg opgg;
+  final DbBaseRepository dbRepo;
+  final WebRepositoryInterface webRepo;
   final CustomerModel customer;
 
   List<AccountModel>? accounts;
@@ -37,19 +37,25 @@ class CustomerDetailsPageViewmodel extends ChangeNotifier {
     for (final AccountModel account in accounts!) {
       if (account.link == null) continue;
 
-      final String ranking = await opgg.fetchAccountRanking(url: account.link!);
-      final AccountModel accountWithRanking = AccountModel(
-        id: account.id,
-        customerId: customer.id,
-        ranking: ranking,
-        tag: account.tag,
-        decayGames: account.decayGames,
-        region: account.region,
-        link: account.link,
-        nick: account.nick,
+      final Result<String> res = await webRepo.fetchAccountRanking(
+        link: account.link!,
       );
 
-      await repo.editAccount(account: accountWithRanking);
+      if (res is Ok<String>) {
+        final String ranking = res.value;
+        final AccountModel accountWithRanking = AccountModel(
+          id: account.id,
+          customerId: customer.id,
+          ranking: ranking,
+          tag: account.tag,
+          decayGames: account.decayGames,
+          region: account.region,
+          link: account.link,
+          nick: account.nick,
+        );
+
+        await dbRepo.editAccount(account: accountWithRanking);
+      }
     }
 
     await refresh();
@@ -60,7 +66,7 @@ class CustomerDetailsPageViewmodel extends ChangeNotifier {
     errorMsg = null;
     notifyListeners();
 
-    final Result<List<AccountModel>> response = await repo.fetchAccounts(
+    final Result<List<AccountModel>> response = await dbRepo.fetchAccounts(
       customer.id!,
     );
 

@@ -1,8 +1,10 @@
 import 'package:http/http.dart';
+import 'package:spyrift/services/web_interface.dart';
 
-class Opgg {
-  Future<String> fetchAccountRanking({required String url}) async {
-    final Uri uri = Uri.parse(url);
+class Opgg implements WebInterface {
+  @override
+  Future<String> fetchAccountRanking({required String link}) async {
+    final Uri uri = Uri.parse(link);
     final Response response = await get(uri);
     final String body = response.body;
     final RegExp regex = RegExp(

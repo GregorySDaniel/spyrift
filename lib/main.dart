@@ -5,7 +5,10 @@ import 'package:spyrift/app_route.dart';
 import 'package:spyrift/repository/db_base_repository.dart';
 import 'package:spyrift/repository/db_mock_repository.dart';
 import 'package:spyrift/repository/db_repository.dart';
+import 'package:spyrift/repository/opgg_repository.dart';
+import 'package:spyrift/repository/web_repository_interface.dart';
 import 'package:spyrift/services/database_interface.dart';
+import 'package:spyrift/services/opgg.dart';
 import 'package:spyrift/services/sqflite.dart';
 import 'package:spyrift/theme.dart';
 import 'package:spyrift/util.dart';
@@ -28,15 +31,17 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  late DbBaseRepository repo;
   late DatabaseInterface db;
+  late DbBaseRepository dbRepository;
+  late WebRepositoryInterface webRepository;
 
   @override
   void initState() {
     super.initState();
 
     db = Sqflite();
-    repo = useMock ? DbMockRepository() : DbRepository(db: db);
+    webRepository = OpggRepository(webService: Opgg());
+    dbRepository = useMock ? DbMockRepository() : DbRepository(db: db);
   }
 
   @override
@@ -51,8 +56,9 @@ class _MainAppState extends State<MainApp> {
 
     return MultiProvider(
       providers: <SingleChildWidget>[
-        Provider<DbBaseRepository>.value(value: repo),
+        Provider<DbBaseRepository>.value(value: dbRepository),
         Provider<DatabaseInterface>.value(value: db),
+        Provider<WebRepositoryInterface>.value(value: webRepository),
       ],
       child: MaterialApp.router(
         routerConfig: router(),
