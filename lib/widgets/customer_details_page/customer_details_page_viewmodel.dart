@@ -70,17 +70,16 @@ class CustomerDetailsPageViewmodel extends ChangeNotifier {
       customer.id!,
     );
 
-    // TODO: tratar erros
-    if (response is Error<AccountModel>) {
-      isLoading = false;
-      errorMsg = 'Ocorreu um erro';
-      notifyListeners();
-    }
-
     if (response is Ok<List<AccountModel>>) {
       accounts = response.value;
       isLoading = false;
-      notifyListeners();
     }
+
+    if (response is Error<List<AccountModel>>) {
+      isLoading = false;
+      errorMsg = 'Error: ${response.error}';
+    }
+
+    notifyListeners();
   }
 }

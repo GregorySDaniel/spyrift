@@ -72,9 +72,10 @@ class DbMockRepository implements DbBaseRepository {
   }
 
   @override
-  Future<Result<void>> editAccount({required AccountModel account}) {
-    // TODO: implement editAccount
-    throw UnimplementedError();
+  Future<Result<void>> editAccount({required AccountModel account}) async {
+    await Future<void>.delayed(const Duration(seconds: 2));
+
+    return Result<void>.emptyOk();
   }
 }
 

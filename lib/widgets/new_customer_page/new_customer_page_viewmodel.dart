@@ -17,6 +17,8 @@ class NewCustomerPageViewmodel extends ChangeNotifier {
   List<AccountModel> accounts = <AccountModel>[];
   List<AccountModel> retrievedAccounts = <AccountModel>[];
 
+  String? errorMessage;
+
   void addAccount() {
     final AccountModel account = parsefromOpggLink(accTec.text);
     accounts.add(account);
@@ -90,12 +92,17 @@ class NewCustomerPageViewmodel extends ChangeNotifier {
 
     final Result<int> customerIdRes = await repo.addCustomer(customer);
 
-    // TODO: tratar erro
     if (customerIdRes is Ok<int>) {
       final int customerId = customerIdRes.value;
 
       await repo.addAccounnts(accounts: accounts, customerId: customerId);
     }
+
+    if (customerIdRes is Error<int>) {
+      errorMessage = 'Error: ${customerIdRes.error}';
+    }
+
+    notifyListeners();
 
     return true;
   }
@@ -107,7 +114,6 @@ class NewCustomerPageViewmodel extends ChangeNotifier {
 
     if (intCustomerid == null) return;
 
-    // TODO: tratar erro
     final Result<List<AccountModel>> retrievedAccountsRes = await repo
         .fetchAccounts(intCustomerid);
 
@@ -117,7 +123,12 @@ class NewCustomerPageViewmodel extends ChangeNotifier {
       accounts.addAll(_retrievedAccounts);
     }
 
-    // TODO: tratar erro
+    if (retrievedAccountsRes is Error<List<AccountModel>>) {
+      errorMessage = 'Error: ${retrievedAccountsRes.error}';
+    }
+
+    notifyListeners();
+
     final Result<CustomerModel> customerRes = await repo.fetchCustomerById(
       intCustomerid,
     );
@@ -125,6 +136,10 @@ class NewCustomerPageViewmodel extends ChangeNotifier {
     if (customerRes is Ok<CustomerModel>) {
       final CustomerModel cust = customerRes.value;
       nameTec.text = cust.name;
+    }
+
+    if (customerRes is Error<CustomerModel>) {
+      errorMessage = 'Error: ${customerRes.error}';
     }
     notifyListeners();
   }

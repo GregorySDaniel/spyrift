@@ -37,16 +37,18 @@ class _NewCustomerPageState extends State<NewCustomerPage> {
 
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FilledButton(
-        onPressed: () async {
-          if (viewmodel.nameFormKey.currentState!.validate()) {
-            if (await viewmodel.onSubmit()) {
-              if (mounted) context.pop(true);
-            }
-          }
-        },
-        child: Text('Confirm'),
-      ),
+      floatingActionButton: viewmodel.errorMessage == null
+          ? FilledButton(
+              onPressed: () async {
+                if (viewmodel.nameFormKey.currentState!.validate()) {
+                  if (await viewmodel.onSubmit()) {
+                    if (mounted) context.pop(true);
+                  }
+                }
+              },
+              child: Text('Confirm'),
+            )
+          : null,
       appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
@@ -70,13 +72,18 @@ class _NewCustomerPageState extends State<NewCustomerPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 spacing: 16,
                 children: <Widget>[
-                  _LabelInput(label: 'Name', tec: viewmodel.nameTec),
-                  _AccountLinks(
-                    accounts: viewmodel.accounts,
-                    addFunction: viewmodel.addAccount,
-                    removeFunction: viewmodel.removeAccount,
-                    accTec: viewmodel.accTec,
-                  ),
+                  if (viewmodel.errorMessage == null)
+                    _LabelInput(label: 'Name', tec: viewmodel.nameTec),
+                  if (viewmodel.errorMessage == null)
+                    _AccountLinks(
+                      accounts: viewmodel.accounts,
+                      addFunction: viewmodel.addAccount,
+                      removeFunction: viewmodel.removeAccount,
+                      accTec: viewmodel.accTec,
+                    ),
+
+                  if (viewmodel.errorMessage != null)
+                    Center(child: Text(viewmodel.errorMessage!)),
                 ],
               ),
             ),
