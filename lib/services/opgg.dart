@@ -16,6 +16,6 @@ class Opgg {
       return ranking;
     }
 
-    return 'Not found';
+    throw Exception('Not found');
   }
 }
