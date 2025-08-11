@@ -1,15 +1,15 @@
-import 'package:desktop/model/customer_model.dart';
-import 'package:desktop/repository/db_base_repository.dart';
-import 'package:desktop/services/opgg.dart';
-import 'package:desktop/widgets/customer_details_page/customer_details_page.dart';
-import 'package:desktop/widgets/customer_details_page/customer_details_page_viewmodel.dart';
-import 'package:desktop/widgets/home_page/home_page.dart';
-import 'package:desktop/widgets/home_page/home_page_viewmodel.dart';
-import 'package:desktop/widgets/new_customer_page/new_customer_page.dart';
-import 'package:desktop/widgets/new_customer_page/new_customer_page_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:spyrift/model/customer_model.dart';
+import 'package:spyrift/repository/db_base_repository.dart';
+import 'package:spyrift/services/opgg.dart';
+import 'package:spyrift/widgets/customer_details_page/customer_details_page.dart';
+import 'package:spyrift/widgets/customer_details_page/customer_details_page_viewmodel.dart';
+import 'package:spyrift/widgets/home_page/home_page.dart';
+import 'package:spyrift/widgets/home_page/home_page_viewmodel.dart';
+import 'package:spyrift/widgets/new_customer_page/new_customer_page.dart';
+import 'package:spyrift/widgets/new_customer_page/new_customer_page_viewmodel.dart';
 
 GoRouter router() {
   return GoRouter(routes: routes(), initialLocation: '/');

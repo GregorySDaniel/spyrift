@@ -1,8 +1,8 @@
-import 'package:desktop/model/account_model.dart';
-import 'package:desktop/model/customer_model.dart';
-import 'package:desktop/repository/db_base_repository.dart';
-import 'package:desktop/services/database_interface.dart';
-import 'package:desktop/util.dart';
+import 'package:spyrift/model/account_model.dart';
+import 'package:spyrift/model/customer_model.dart';
+import 'package:spyrift/repository/db_base_repository.dart';
+import 'package:spyrift/services/database_interface.dart';
+import 'package:spyrift/util.dart';
 
 class DbRepository implements DbBaseRepository {
   DbRepository({required this.db});

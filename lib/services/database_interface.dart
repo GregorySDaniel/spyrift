@@ -1,5 +1,5 @@
-import 'package:desktop/model/account_model.dart';
-import 'package:desktop/model/customer_model.dart';
+import 'package:spyrift/model/account_model.dart';
+import 'package:spyrift/model/customer_model.dart';
 
 abstract class DatabaseInterface {
   Future<List<CustomerModel>> fetchCustomers();

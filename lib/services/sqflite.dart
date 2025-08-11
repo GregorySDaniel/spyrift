@@ -1,7 +1,7 @@
-import 'package:desktop/model/account_model.dart';
-import 'package:desktop/model/customer_model.dart';
-import 'package:desktop/services/database_interface.dart';
 import 'package:path/path.dart';
+import 'package:spyrift/model/account_model.dart';
+import 'package:spyrift/model/customer_model.dart';
+import 'package:spyrift/services/database_interface.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class Sqflite implements DatabaseInterface {

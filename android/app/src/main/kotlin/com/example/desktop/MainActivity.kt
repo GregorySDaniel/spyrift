@@ -1,4 +1,4 @@
-package com.example.desktop
+package com.example.spyrift
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,14 +1,14 @@
-import 'package:desktop/app_route.dart';
-import 'package:desktop/repository/db_base_repository.dart';
-import 'package:desktop/repository/db_mock_repository.dart';
-import 'package:desktop/repository/db_repository.dart';
-import 'package:desktop/services/database_interface.dart';
-import 'package:desktop/services/sqflite.dart';
-import 'package:desktop/theme.dart';
-import 'package:desktop/util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
+import 'package:spyrift/app_route.dart';
+import 'package:spyrift/repository/db_base_repository.dart';
+import 'package:spyrift/repository/db_mock_repository.dart';
+import 'package:spyrift/repository/db_repository.dart';
+import 'package:spyrift/services/database_interface.dart';
+import 'package:spyrift/services/sqflite.dart';
+import 'package:spyrift/theme.dart';
+import 'package:spyrift/util.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 bool useMock = false;

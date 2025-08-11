@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:desktop/model/account_model.dart';
-import 'package:desktop/widgets/customer_details_page/customer_details_page_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:spyrift/model/account_model.dart';
+import 'package:spyrift/widgets/customer_details_page/customer_details_page_viewmodel.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CustomerDetailsPage extends StatefulWidget {

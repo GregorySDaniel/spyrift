@@ -1,5 +1,5 @@
-import 'package:desktop/services/opgg.dart';
-import 'package:desktop/util.dart';
+import 'package:spyrift/services/opgg.dart';
+import 'package:spyrift/util.dart';
 
 class OpggRepository {
   OpggRepository({required this.opgg});

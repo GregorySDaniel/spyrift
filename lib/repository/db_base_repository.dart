@@ -1,6 +1,6 @@
-import 'package:desktop/model/account_model.dart';
-import 'package:desktop/model/customer_model.dart';
-import 'package:desktop/util.dart';
+import 'package:spyrift/model/account_model.dart';
+import 'package:spyrift/model/customer_model.dart';
+import 'package:spyrift/util.dart';
 
 abstract class DbBaseRepository {
   Future<Result<List<AccountModel>>> fetchAccounts(int customerId);
