@@ -101,6 +101,7 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text('Dashboard', style: TextStyle(fontSize: 48)),
+              Divider(),
               if (viewmodel.isLoading)
                 Center(child: CircularProgressIndicator()),
 
@@ -158,7 +159,16 @@ class _CustomerContainer extends StatelessWidget {
               padding: EdgeInsets.all(16),
               width: 200,
               height: 200,
-              child: Center(child: Text(customer.name)),
+              child: Center(
+                child: Column(
+                  spacing: 4,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Icon(Icons.person, size: 64),
+                    Text(customer.name, style: theme.textTheme.titleMedium),
+                  ],
+                ),
+              ),
             ),
           ),
         ),

@@ -18,6 +18,8 @@ class CustomerDetailsPageViewmodel extends ChangeNotifier {
   final WebRepositoryInterface webRepo;
   final CustomerModel customer;
 
+  final TextEditingController searchTec = TextEditingController();
+
   List<AccountModel>? accounts;
 
   bool isLoading = false;

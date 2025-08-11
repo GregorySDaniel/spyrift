@@ -48,18 +48,43 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
             children: <Widget>[
               Align(
                 alignment: Alignment.center,
-                child: Text(
-                  viewmodel.customer.name,
-                  style: theme.textTheme.titleLarge,
+                child: Column(
+                  children: <Widget>[
+                    Icon(Icons.person, size: 64),
+                    Text(
+                      viewmodel.customer.name,
+                      style: theme.textTheme.titleLarge,
+                    ),
+                  ],
                 ),
               ),
               if (viewmodel.accounts != null && viewmodel.accounts!.isNotEmpty)
-                IconButton(
-                  onPressed: () async {
-                    await viewmodel.fetchAccountsRanking();
-                  },
-                  icon: Icon(Icons.refresh),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    SizedBox(
+                      width: 300,
+                      child: TextField(
+                        controller: viewmodel.searchTec,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(32),
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                          prefixIcon: Icon(Icons.search),
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () async {
+                        await viewmodel.fetchAccountsRanking();
+                      },
+                      icon: Icon(Icons.refresh),
+                    ),
+                  ],
                 ),
+
+              Divider(),
               if (viewmodel.isLoading)
                 Center(child: CircularProgressIndicator()),
               if (viewmodel.accounts != null && !viewmodel.isLoading)

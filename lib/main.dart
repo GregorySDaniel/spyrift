@@ -10,6 +10,7 @@ import 'package:spyrift/repository/web_repository_interface.dart';
 import 'package:spyrift/services/database_interface.dart';
 import 'package:spyrift/services/opgg.dart';
 import 'package:spyrift/services/sqflite.dart';
+import 'package:spyrift/services/web_interface.dart';
 import 'package:spyrift/theme.dart';
 import 'package:spyrift/util.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -34,13 +35,15 @@ class _MainAppState extends State<MainApp> {
   late DatabaseInterface db;
   late DbBaseRepository dbRepository;
   late WebRepositoryInterface webRepository;
+  late WebInterface webService;
 
   @override
   void initState() {
     super.initState();
 
     db = Sqflite();
-    webRepository = OpggRepository(webService: Opgg());
+    webService = Opgg();
+    webRepository = OpggRepository(webService: webService);
     dbRepository = useMock ? DbMockRepository() : DbRepository(db: db);
   }
 
