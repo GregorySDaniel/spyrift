@@ -33,28 +33,48 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
     final CustomerDetailsPageViewmodel viewmodel = context
         .watch<CustomerDetailsPageViewmodel>();
 
+    final ThemeData theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(),
       body: SizedBox(
         width: double.maxFinite,
-        child: Column(
-          spacing: 12,
-          crossAxisAlignment: CrossAxisAlignment.center,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 96),
+          child: Column(
+            spacing: 12,
+            crossAxisAlignment: CrossAxisAlignment.start,
 
-          children: <Widget>[
-            Text('Hello World'),
-            if (viewmodel.isLoading) Center(child: CircularProgressIndicator()),
-            if (viewmodel.accounts != null)
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: viewmodel.accounts!
-                    .map(
-                      (AccountModel account) => _AccContainer(account: account),
-                    )
-                    .toList(),
+            children: <Widget>[
+              Align(
+                alignment: Alignment.center,
+                child: Text(
+                  viewmodel.customer.name,
+                  style: theme.textTheme.titleLarge,
+                ),
               ),
-          ],
+              if (viewmodel.accounts != null && viewmodel.accounts!.isNotEmpty)
+                IconButton(
+                  onPressed: () async {
+                    await viewmodel.fetchAccountsRanking();
+                  },
+                  icon: Icon(Icons.refresh),
+                ),
+              if (viewmodel.isLoading)
+                Center(child: CircularProgressIndicator()),
+              if (viewmodel.accounts != null && !viewmodel.isLoading)
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: viewmodel.accounts!
+                      .map(
+                        (AccountModel account) =>
+                            _AccContainer(account: account),
+                      )
+                      .toList(),
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -81,6 +101,8 @@ class _AccContainer extends StatelessWidget {
           padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
             border: Border.all(color: theme.colorScheme.primary),
+            color: theme.colorScheme.surfaceBright,
+            borderRadius: BorderRadius.circular(8),
           ),
           child: Column(
             children: <Widget>[

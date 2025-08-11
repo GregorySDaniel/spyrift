@@ -151,7 +151,9 @@ class _CustomerContainer extends StatelessWidget {
             onTap: () => context.push('/customer', extra: customer),
             child: Container(
               decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: theme.colorScheme.primary),
+                color: theme.colorScheme.surfaceBright,
               ),
               padding: EdgeInsets.all(16),
               width: 200,

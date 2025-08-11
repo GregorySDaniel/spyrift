@@ -31,6 +31,9 @@ class CustomerDetailsPageViewmodel extends ChangeNotifier {
   Future<void> fetchAccountsRanking() async {
     if (accounts == null) return;
 
+    isLoading = true;
+    notifyListeners();
+
     for (final AccountModel account in accounts!) {
       if (account.link == null) continue;
 
