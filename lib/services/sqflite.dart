@@ -15,7 +15,7 @@ class Sqflite implements DatabaseInterface {
 
   Future<void> openDb() async {
     _db = await databaseFactoryFfi.openDatabase(
-      join(await getDatabasesPath(), 'abc.db'),
+      join(await getDatabasesPath(), 'spyrift.db'),
     );
 
     if (_db != null) {
