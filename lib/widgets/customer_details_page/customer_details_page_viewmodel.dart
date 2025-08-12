@@ -21,9 +21,23 @@ class CustomerDetailsPageViewmodel extends ChangeNotifier {
   final TextEditingController searchTec = TextEditingController();
 
   List<AccountModel>? accounts;
+  List<AccountModel>? accountsSearched;
 
   bool isLoading = false;
   String? errorMsg;
+
+  void filterList() {
+    if (accounts == null) return;
+
+    accountsSearched = accounts!
+        .where(
+          (AccountModel acc) =>
+              acc.nick!.toLowerCase().contains(searchTec.text.toLowerCase()),
+        )
+        .toList();
+
+    notifyListeners();
+  }
 
   Future<void> refresh() async {
     await getAccounts();

@@ -24,7 +24,13 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
       final CustomerDetailsPageViewmodel viewmodel = context
           .read<CustomerDetailsPageViewmodel>();
 
-      unawaited(viewmodel.getAccounts());
+      await viewmodel.getAccounts();
+
+      viewmodel.accountsSearched = viewmodel.accounts;
+
+      viewmodel.searchTec.addListener(() {
+        viewmodel.filterList();
+      });
     });
   }
 
@@ -91,7 +97,7 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
-                  children: viewmodel.accounts!
+                  children: viewmodel.accountsSearched!
                       .map(
                         (AccountModel account) =>
                             _AccContainer(account: account),
