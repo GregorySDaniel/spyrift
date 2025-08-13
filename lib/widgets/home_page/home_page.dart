@@ -107,8 +107,8 @@ class _HomePageState extends State<HomePage> {
 
               if (viewmodel.customers != null)
                 Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
+                  spacing: 12,
+                  runSpacing: 12,
                   children: viewmodel.customers!
                       .map(
                         (CustomerModel customer) => _CustomerContainer(
@@ -127,7 +127,7 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class _CustomerContainer extends StatelessWidget {
+class _CustomerContainer extends StatefulWidget {
   const _CustomerContainer({
     required this.customer,
     required this.onDelete,
@@ -140,52 +140,80 @@ class _CustomerContainer extends StatelessWidget {
   final void Function(int id, HomePageViewmodel vm) onEdit;
 
   @override
+  State<_CustomerContainer> createState() => _CustomerContainerState();
+}
+
+class _CustomerContainerState extends State<_CustomerContainer> {
+  bool isHovering = false;
+
+  @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final HomePageViewmodel viewModel = context.watch<HomePageViewmodel>();
 
-    return Stack(
-      children: <Widget>[
-        MouseRegion(
-          cursor: SystemMouseCursors.click,
-          child: GestureDetector(
-            onTap: () => context.push('/customer', extra: customer),
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: theme.colorScheme.primary),
-                color: theme.colorScheme.surfaceBright,
-              ),
-              padding: EdgeInsets.all(16),
-              width: 200,
-              height: 200,
-              child: Center(
-                child: Column(
-                  spacing: 4,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Icon(Icons.person, size: 64),
-                    Text(customer.name, style: theme.textTheme.titleMedium),
-                  ],
+    return AnimatedScale(
+      scale: isHovering ? 1.06 : 1,
+      duration: const Duration(milliseconds: 100),
+      child: Stack(
+        children: <Widget>[
+          MouseRegion(
+            onHover: (_) {
+              setState(() {
+                isHovering = true;
+              });
+            },
+            onExit: (_) {
+              setState(() {
+                isHovering = false;
+              });
+            },
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
+              onTap: () => context.push('/customer', extra: widget.customer),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: theme.colorScheme.primary),
+                  color: theme.colorScheme.surfaceBright,
+                ),
+                padding: EdgeInsets.all(16),
+                width: 200,
+                height: 200,
+                child: Center(
+                  child: Column(
+                    spacing: 4,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Icon(Icons.person, size: 64),
+                      Text(
+                        widget.customer.name,
+                        style: theme.textTheme.titleMedium,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-        Positioned(
-          child: IconButton(
-            onPressed: () => onEdit(customer.id!, viewModel),
-            icon: Icon(Icons.edit),
+          Positioned(
+            child: IconButton(
+              onPressed: () => widget.onEdit(widget.customer.id!, viewModel),
+              icon: Icon(Icons.edit),
+            ),
           ),
-        ),
-        Positioned(
-          right: 0,
-          child: IconButton(
-            onPressed: () => onDelete(customer.id!, viewModel.repo, viewModel),
-            icon: Icon(Icons.delete),
+          Positioned(
+            right: 0,
+            child: IconButton(
+              onPressed: () => widget.onDelete(
+                widget.customer.id!,
+                viewModel.repo,
+                viewModel,
+              ),
+              icon: Icon(Icons.delete),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

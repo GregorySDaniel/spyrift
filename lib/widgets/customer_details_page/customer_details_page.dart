@@ -40,7 +40,14 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
     final ThemeData theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        actions: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: IconButton(onPressed: () {}, icon: Icon(Icons.edit)),
+          ),
+        ],
+      ),
       body: SizedBox(
         width: double.maxFinite,
         child: Padding(
@@ -93,8 +100,8 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
                 Center(child: CircularProgressIndicator()),
               if (viewmodel.accounts != null && !viewmodel.isLoading)
                 Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
+                  spacing: 12,
+                  runSpacing: 12,
                   children: viewmodel.accountsSearched!
                       .map(
                         (AccountModel account) =>
@@ -110,36 +117,63 @@ class _CustomerDetailsPageState extends State<CustomerDetailsPage> {
   }
 }
 
-class _AccContainer extends StatelessWidget {
+class _AccContainer extends StatefulWidget {
   const _AccContainer({required this.account});
 
   final AccountModel account;
 
   @override
+  State<_AccContainer> createState() => _AccContainerState();
+}
+
+class _AccContainerState extends State<_AccContainer> {
+  bool isHovering = false;
+
+  @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final Uri url = Uri.parse(account.link!);
+    final Uri url = Uri.parse(widget.account.link!);
 
     return MouseRegion(
+      onHover: (_) {
+        setState(() {
+          isHovering = true;
+        });
+      },
+      onExit: (_) {
+        setState(() {
+          isHovering = false;
+        });
+      },
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: () async {
           if (!await launchUrl(url)) throw Exception();
         },
-        child: Container(
-          padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            border: Border.all(color: theme.colorScheme.primary),
-            color: theme.colorScheme.surfaceBright,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Column(
+        child: AnimatedScale(
+          scale: isHovering ? 1.06 : 1,
+          duration: const Duration(milliseconds: 100),
+          child: Stack(
             children: <Widget>[
-              Text("NICK: ${account.nick ?? 'idk'}"),
-              Text("RANKING: ${account.ranking ?? 'idk'}"),
-              Text("REGION: ${account.region ?? 'idk'}"),
-              Text("TAG: ${account.tag ?? 'idk'}"),
-              Text("DECAY: ${account.decayGames ?? 'idk'}"),
+              Container(
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  border: Border.all(color: theme.colorScheme.primary),
+                  color: theme.colorScheme.surfaceBright,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  children: <Widget>[
+                    Text("NICK: ${widget.account.nick ?? 'idk'}"),
+                    Text("RANKING: ${widget.account.ranking ?? 'idk'}"),
+                    Text("REGION: ${widget.account.region ?? 'idk'}"),
+                    Text("TAG: ${widget.account.tag ?? 'idk'}"),
+                    Text("DECAY: ${widget.account.decayGames ?? 'idk'}"),
+                  ],
+                ),
+              ),
+              if (isHovering)
+                Positioned(top: 4, right: 4, child: Icon(Icons.arrow_outward)),
             ],
           ),
         ),
